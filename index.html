@@ -61,17 +61,14 @@
                 <button class="btn-close-panel" aria-label="Minimize Panel"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
             </div>
 
-            <!-- Panel Tabs -->
             <div class="panel-tabs">
                 <button class="tab-btn active" data-tab="tab-scan">Scan</button>
                 <button class="tab-btn" data-tab="tab-history">History</button>
                 <button class="tab-btn" data-tab="tab-settings">Settings</button>
             </div>
 
-            <!-- Content Area -->
             <div class="panel-content">
-                
-                <!-- SCAN TAB (Active by default) -->
+                <!-- SCAN TAB -->
                 <div id="tab-scan" class="tab-pane active">
                     <div class="input-section">
                         <label><span class="dot cyan"></span> Market</label>
@@ -110,7 +107,6 @@
                         </div>
                     </div>
                     <div class="history-list" id="history-list-container">
-                        <!-- Dynamic History Items -->
                         <div class="empty-state">No scan history available.</div>
                     </div>
                 </div>
@@ -136,7 +132,6 @@
                         <button class="btn-danger-outline w-100" id="btn-reset-app">Reset Factory Settings</button>
                     </div>
                 </div>
-
             </div>
 
             <div class="panel-footer">
@@ -145,7 +140,7 @@
             </div>
         </div>
 
-        <!-- Compact Minimized Launcher -->
+        <!-- Compact Launcher -->
         <div class="nova-minimized hidden" id="nova-minimized-launcher">
             <div class="mini-robot-avatar"><div class="robot-face-mini"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div></div>
             <div class="minimized-text"><h4>NOVA</h4><p>Tap to open</p></div>
@@ -153,12 +148,13 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts (Order MUST be strictly maintained) -->
     <script src="demo-chart.js"></script>
+    <script src="data-adapter.js"></script>
     <script src="indicator-engine.js"></script>
     <script src="scanner-engine.js"></script>
-    <script src="settings-manager.js"></script> <!-- NEW -->
-    <script src="history-manager.js"></script>  <!-- NEW -->
-    <script src="app.js"></script> <!-- UPDATED -->
+    <script src="settings-manager.js"></script>
+    <script src="history-manager.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
