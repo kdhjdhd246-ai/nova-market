@@ -1,5 +1,5 @@
 /**
- * NOVA MARKET AI - Cyber Theme with Auto-Minimize, Auto-Expand, Sound Effects & Smart Martingale
+ * NOVA MARKET AI - Ultimate Edition with Emergency Stop, Auto-Minimize/Expand, Sound Effects & Smart Martingale
  */
 (function() {
     if (document.getElementById('nova-ai-overlay')) {
@@ -67,7 +67,7 @@
         .panel-tabs { display: flex; padding: 12px 16px; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .tab-btn { flex: 1; display: flex; justify-content: center; gap: 6px; background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 0; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
         .tab-btn.active { background: rgba(0,85,255,0.2); border: 1px solid var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,229,255,0.2); }
-        .panel-content { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .panel-content { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
         .tab-pane.hidden { display: none !important; }
         
         .cyber-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.15); border-radius: 8px; padding: 12px; position: relative; }
@@ -78,12 +78,15 @@
         .option-item { padding: 10px 12px; font-size: 12px; cursor: pointer; }
         .option-item:hover { background: rgba(0,229,255,0.15); color: var(--neon-blue); }
         
-        .scan-action-area { position: relative; display: flex; justify-content: center; align-items: center; padding: 20px 0; }
-        .btn-start-scan { position: relative; z-index: 2; width: 85%; background: linear-gradient(90deg, #0055ff, #00e5ff); color: #fff; border: 1px solid var(--neon-blue); padding: 14px; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px rgba(0,229,255,0.5); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
-        .btn-start-scan.scanning { background: rgba(0,85,255,0.3); pointer-events: none; border: 1px dashed var(--neon-blue); }
+        .scan-action-area { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 10px 0; }
+        .btn-start-scan { width: 100%; background: linear-gradient(90deg, #0055ff, #00e5ff); color: #fff; border: 1px solid var(--neon-blue); padding: 12px; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px rgba(0,229,255,0.5); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
         
+        /* Emergency Stop Button */
+        .btn-panic-stop { width: 100%; background: linear-gradient(90deg, #ff3333, #ff6666); color: #fff; border: 1px solid #ff0000; padding: 10px; border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(255,0,0,0.4); text-transform: uppercase; }
+        .btn-panic-stop:hover { background: linear-gradient(90deg, #ff0000, #ff3333); }
+
         .mode-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 8px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); }
-        .mode-btn { flex: 1; display: flex; justify-content: center; gap: 6px; background: none; border: none; color: var(--text-muted); padding: 10px 0; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; }
+        .mode-btn { flex: 1; display: flex; justify-content: center; gap: 6px; background: none; border: none; color: var(--text-muted); padding: 8px 0; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; }
         .mode-btn.active { background: linear-gradient(90deg, rgba(0,85,255,0.5), rgba(0,229,255,0.5)); color: #fff; border: 1px solid var(--neon-blue); }
         
         .limit-inputs { display: flex; gap: 10px; margin-top: 10px; }
@@ -91,10 +94,10 @@
         .limit-box label { font-size: 9px; color: var(--neon-blue); margin-bottom: 4px; display: block; }
         .limit-box input { width: 100%; background: transparent; border: none; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
         
-        .status-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.3); border-radius: 8px; padding: 14px; display: flex; align-items: center; gap: 15px; position: relative; }
-        .status-ring { width: 30px; height: 30px; border: 2px dashed var(--neon-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
-        .status-ring::after { content: ''; width: 12px; height: 12px; background: var(--neon-blue); border-radius: 50%; }
-        .status-text h3 { font-size: 13px; font-weight: 700; margin: 0 0 2px 0; color: #fff; }
+        .status-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.3); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; position: relative; }
+        .status-ring { width: 26px; height: 26px; border: 2px dashed var(--neon-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .status-ring::after { content: ''; width: 10px; height: 10px; background: var(--neon-blue); border-radius: 50%; }
+        .status-text h3 { font-size: 12px; font-weight: 700; margin: 0 0 2px 0; color: #fff; }
         .status-text p { font-size: 10px; color: var(--text-muted); margin: 0; }
         
         .panel-footer { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
@@ -161,9 +164,12 @@
                             <div class="option-item" data-value="GBP/USD">GBP/USD</div>
                         </div>
                     </div>
+                    
                     <div class="scan-action-area">
                         <button class="btn-start-scan" id="btn-start-scan">◎ START SCAN ≫</button>
+                        <button class="btn-panic-stop" id="btn-panic-stop">🚨 STOP ALL (PANIC)</button>
                     </div>
+
                     <div>
                         <label style="font-size:11px; color:#8496ae; margin-bottom:5px; display:block;">Scan Mode</label>
                         <div class="mode-toggle">
@@ -267,8 +273,17 @@
         autoTimer = setInterval(() => { if (isAuto) executeScan(); }, 15000);
     }
 
+    // Emergency Panic Stop Button Logic
+    document.getElementById('btn-panic-stop').addEventListener('click', () => {
+        stopAutoScan();
+        scannerOverlay.classList.add('hidden');
+        document.getElementById('ui-status-title').innerText = 'EMERGENCY STOP';
+        document.getElementById('ui-status-title').style.color = '#ff3333';
+        document.getElementById('ui-status-desc').innerText = 'All auto-trading halted manually.';
+        alert('🚨 NOVA AI: Emergency Stop Activated! All automated tasks stopped.');
+    });
+
     document.getElementById('btn-start-scan').addEventListener('click', () => {
-        // ১. স্টার্ট বাটনে চাপ দিলেই প্যানেল মিনিমাইজ হয়ে যাবে
         panel.classList.add('hidden');
         launcher.classList.remove('hidden');
         executeScan();
@@ -312,7 +327,6 @@
                 document.getElementById('ui-status-title').style.color = '#ffcc00';
                 document.getElementById('ui-status-desc').innerText = `Recovery Active. Score (${score}) low. Waiting...`;
                 
-                // স্ক্যান ও সিগন্যাল প্রসেস শেষ হওয়ায় প্যানেল আবার অটো বড় হয়ে যাবে
                 launcher.classList.add('hidden');
                 panel.classList.remove('hidden');
                 return; 
@@ -364,7 +378,6 @@
                 document.getElementById('ui-status-desc').innerHTML = `Target direction: <strong>${chosenSignal}</strong>`;
             }
 
-            // ২. স্ক্যান ও ট্রেড প্লেস করার কাজ শেষ হওয়া মাত্রই বট নিজে থেকে আগের মতো বড় হয়ে যাবে
             launcher.classList.add('hidden');
             panel.classList.remove('hidden');
 
