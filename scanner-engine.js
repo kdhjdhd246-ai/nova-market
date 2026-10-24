@@ -1,7 +1,5 @@
 /**
  * NOVA MARKET AI - Scanner Engine (Visual Animation Layer)
- * Handles the visual radar overlay, laser, and progress bar using requestAnimationFrame.
- * This does NOT represent actual market data, strictly visual feedback as per rules.
  */
 
 class NovaScannerEngine {
@@ -12,33 +10,27 @@ class NovaScannerEngine {
         
         this.isScanning = false;
         this.animationFrameId = null;
-        this.scanDuration = 3000; // 3 seconds mock visual scan for now
+        this.scanDuration = 3000; 
     }
 
     startScan(onComplete) {
         if (this.isScanning) return;
         this.isScanning = true;
         
-        // Show overlay (dims chart, shows radar)
         this.overlay.classList.remove('hidden');
         this.progressFill.style.width = '0%';
         this.particlesContainer.innerHTML = '';
         
         let startTime = null;
 
-        // Efficient animation loop using requestAnimationFrame
         const animateProgress = (timestamp) => {
             if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
             
-            // Calculate progress 0 to 100%
             const progress = Math.min((elapsed / this.scanDuration) * 100, 100);
             this.progressFill.style.width = `${progress}%`;
 
-            // Randomly spawn particles for the radar effect
-            if (Math.random() > 0.8) {
-                this.spawnParticle();
-            }
+            if (Math.random() > 0.8) this.spawnParticle();
 
             if (elapsed < this.scanDuration && this.isScanning) {
                 this.animationFrameId = requestAnimationFrame(animateProgress);
@@ -59,24 +51,19 @@ class NovaScannerEngine {
             this.animationFrameId = null;
         }
 
-        // Hide overlay and clean up
         this.overlay.classList.add('hidden');
         this.progressFill.style.width = '0%';
         this.particlesContainer.innerHTML = ''; 
 
-        // Trigger callback (for UI update)
-        if (typeof onComplete === 'function') {
-            onComplete();
-        }
+        if (typeof onComplete === 'function') onComplete();
     }
 
     spawnParticle() {
         const particle = document.createElement('div');
         particle.className = 'scan-particle';
         
-        // Calculate random position within the 400x400 radar container
         const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 150; // Keep inside rings
+        const radius = Math.random() * 150; 
         const x = Math.cos(angle) * radius + 200; 
         const y = Math.sin(angle) * radius + 200;
 
@@ -85,25 +72,16 @@ class NovaScannerEngine {
         
         this.particlesContainer.appendChild(particle);
 
-        // Animate using Web Animations API (Cleanest way to auto-cleanup)
         try {
             const animation = particle.animate([
                 { opacity: 0, transform: 'scale(0)' },
                 { opacity: 1, transform: 'scale(1.5)' },
                 { opacity: 0, transform: 'scale(0)' }
-            ], {
-                duration: 800 + Math.random() * 1000,
-                easing: 'ease-in-out'
-            });
+            ], { duration: 800 + Math.random() * 1000, easing: 'ease-in-out' });
 
-            animation.onfinish = () => {
-                if (particle.parentNode) particle.parentNode.removeChild(particle);
-            };
+            animation.onfinish = () => { if (particle.parentNode) particle.parentNode.removeChild(particle); };
         } catch(e) {
-            // Fallback for older browsers
-            setTimeout(() => {
-                if (particle.parentNode) particle.parentNode.removeChild(particle);
-            }, 1000);
+            setTimeout(() => { if (particle.parentNode) particle.parentNode.removeChild(particle); }, 1000);
         }
     }
 }
