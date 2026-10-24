@@ -1,11 +1,10 @@
 /**
  * NOVA MARKET AI - Main UI Controller
- * Wires together UI interactions, Settings, History, and the Scanner/Indicator engines.
+ * Wires together UI interactions, Settings, History, Data Adapter, and the Scanner/Indicator engines.
  */
 
 class NovaUIController {
     constructor() {
-        // UI Elements
         this.robotAvatar = document.getElementById('nova-robot-avatar');
         this.mainPanel = document.getElementById('nova-main-panel');
         this.minimizedLauncher = document.getElementById('nova-minimized-launcher');
@@ -14,33 +13,30 @@ class NovaUIController {
         this.closeRobotBtn = document.querySelector('.close-robot');
         this.startScanBtn = document.getElementById('btn-start-scan');
         
-        // Status UI
         this.statusBox = document.getElementById('ui-status-box');
         this.statusRing = document.getElementById('ui-status-ring');
         this.statusTitle = document.getElementById('ui-status-title');
         this.statusDesc = document.getElementById('ui-status-desc');
 
-        // Tabs
         this.tabBtns = document.querySelectorAll('.tab-btn');
         this.tabPanes = document.querySelectorAll('.tab-pane');
 
-        // History UI
         this.historyList = document.getElementById('history-list-container');
         this.historyCount = document.getElementById('history-count');
         this.btnClearHistory = document.getElementById('btn-clear-history');
         this.btnExportHistory = document.getElementById('btn-export-history');
 
-        // Settings UI
         this.inputThreshold = document.getElementById('setting-threshold');
         this.valThreshold = document.getElementById('val-threshold');
         this.inputInterval = document.getElementById('setting-interval');
         this.btnResetApp = document.getElementById('btn-reset-app');
 
-        // Engines Integration
+        // Initialize Engines and Managers
         this.scanner = typeof NovaScannerEngine !== 'undefined' ? new NovaScannerEngine() : null;
         this.indicator = window.novaIndicatorEngine || null;
         this.history = window.novaHistoryManager || null;
         this.settings = window.novaSettingsManager || null;
+        this.adapter = window.novaDataAdapter || null;
 
         this.init();
     }
@@ -52,13 +48,11 @@ class NovaUIController {
         this.bindEvents();
         this.loadSavedState();
         
-        // Initialize UI values from Settings & History
         this.initSettingsUI();
         this.renderHistory();
     }
 
     bindEvents() {
-        // Window & Panel Controls
         this.closePanelBtn.addEventListener('click', () => {
             this.mainPanel.classList.add('hidden');
             this.minimizedLauncher.classList.remove('hidden');
@@ -82,24 +76,19 @@ class NovaUIController {
             this.enforceBoundaries(this.mainPanel);
         });
 
-        // Tab Switching
         this.tabBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.tabBtns.forEach(b => b.classList.remove('active'));
                 this.tabPanes.forEach(p => p.classList.add('hidden'));
-                
                 btn.classList.add('active');
-                const targetId = btn.getAttribute('data-tab');
-                document.getElementById(targetId).classList.remove('hidden');
+                document.getElementById(btn.getAttribute('data-tab')).classList.remove('hidden');
             });
         });
 
-        // Scan Action
         if (this.startScanBtn && this.scanner) {
             this.startScanBtn.addEventListener('click', () => this.handleScanTrigger());
         }
 
-        // History Actions
         if (this.btnClearHistory && this.history) {
             this.btnClearHistory.addEventListener('click', () => {
                 if(confirm("Clear all scan history?")) {
@@ -113,18 +102,15 @@ class NovaUIController {
             this.btnExportHistory.addEventListener('click', () => this.history.exportToCSV());
         }
 
-        // Settings Actions
         if (this.settings) {
             this.inputThreshold.addEventListener('input', (e) => {
                 const val = e.target.value;
                 this.valThreshold.innerText = val;
                 this.settings.updateSetting('threshold', parseInt(val));
             });
-
             this.inputInterval.addEventListener('change', (e) => {
                 this.settings.updateSetting('autoScanInterval', parseInt(e.target.value));
             });
-
             this.btnResetApp.addEventListener('click', () => this.settings.resetAll());
         }
     }
@@ -133,7 +119,6 @@ class NovaUIController {
         if (!this.settings) return;
         const thres = this.settings.get('threshold');
         const interv = this.settings.get('autoScanInterval');
-        
         this.inputThreshold.value = thres;
         this.valThreshold.innerText = thres;
         this.inputInterval.value = interv.toString();
@@ -142,49 +127,67 @@ class NovaUIController {
     handleScanTrigger() {
         if (this.scanner.isScanning) return;
 
-        // UI Scanning State
         this.statusBox.className = 'status-box';
         this.startScanBtn.classList.add('scanning');
         this.startScanBtn.querySelector('span').innerText = 'SCANNING...';
         this.statusRing.className = 'status-ring scanning';
-        this.statusTitle.innerText = 'Analyzing Market...';
+        this.statusTitle.innerText = 'Extracting Data...';
         this.statusTitle.style.color = 'var(--text-main)';
-        this.statusDesc.innerHTML = 'Extracting OHLC parameters...';
+        this.statusDesc.innerHTML = 'Connecting to market adapter...';
 
         this.scanner.startScan(() => {
             this.startScanBtn.classList.remove('scanning');
             this.startScanBtn.querySelector('span').innerText = 'START SCAN';
             
-            // Get raw mock data from Demo Chart
-            const rawData = window.novaDemoChart ? window.novaDemoChart.candles : [];
-            
-            if (this.indicator) {
-                const analysisResult = this.indicator.analyze(rawData, true);
-                
-                // Add contextual data before saving
-                analysisResult.symbol = document.getElementById('current-market').innerText.trim();
-                analysisResult.timeframe = document.getElementById('current-timeframe').innerText.trim();
-                
-                // Save to History
-                if (this.history) {
-                    this.history.addScan(analysisResult);
-                    this.renderHistory();
-                }
-
-                // Update UI Display
-                this.updateUIWithResult(analysisResult);
+            if (!this.adapter || !this.indicator) {
+                this.updateUIWithResult({ signal: 'ERROR', score: 0, reason: 'System engines failed to load.', isDemo: false });
+                return;
             }
+
+            // 1. Fetch Market Data via Adapter
+            const marketData = this.adapter.fetchData();
+
+            // 2. Validate Data Presence
+            if (marketData.status === 'unavailable' || marketData.candles.length === 0) {
+                this.updateUIWithResult({
+                    signal: 'WAIT',
+                    score: 0,
+                    reason: 'DATA UNAVAILABLE: Could not extract verified market data from the host canvas.',
+                    isDemo: false
+                });
+                return;
+            }
+
+            // 3. Analyze Data
+            const analysisResult = this.indicator.analyze(marketData.candles, marketData.provenance === 'demo-fallback');
+            
+            // Override UI with real scraped symbols if found, otherwise keep fallback
+            const uiMarket = document.getElementById('current-market').innerText.replace(/[^\x00-\x7F]/g, "").trim(); 
+            analysisResult.symbol = marketData.symbol !== 'UNKNOWN' ? marketData.symbol : uiMarket;
+            analysisResult.timeframe = marketData.timeframe !== 'UNKNOWN' ? marketData.timeframe : document.getElementById('current-timeframe').innerText.trim();
+            
+            if (marketData.isStale) {
+                analysisResult.signal = 'WAIT';
+                analysisResult.reason = 'STALE DATA: The market data appears to be outdated or frozen. WAIT for live ticks.';
+                analysisResult.score = 0;
+            }
+
+            // 4. Save and Update UI
+            if (this.history) {
+                this.history.addScan(analysisResult);
+                this.renderHistory();
+            }
+            this.updateUIWithResult(analysisResult);
         });
     }
 
     updateUIWithResult(result) {
-        // Enforce user threshold setting
         let displaySignal = result.signal;
         let userThreshold = this.settings ? this.settings.get('threshold') : 75;
         
         if ((displaySignal === 'UP' || displaySignal === 'DOWN') && result.score < userThreshold) {
             displaySignal = 'WAIT';
-            result.reason = `Signal blocked: Quality score (${result.score}) is below user minimum threshold (${userThreshold}).`;
+            result.reason = `Signal blocked: Quality score (${result.score}) is below your minimum threshold (${userThreshold}).`;
         }
 
         this.statusBox.className = `status-box signal-${displaySignal.replace(/\s+/g, '')}`;
@@ -195,12 +198,7 @@ class NovaUIController {
 
         let detailsHtml = `${result.reason}`;
         if (result.indicators && result.score > 0) {
-            detailsHtml += `
-                <br>
-                <div class="quality-badge">
-                    Quality: <strong>${result.score}/100</strong> | RSI: ${result.indicators.rsi.toFixed(1)}
-                </div>
-            `;
+            detailsHtml += `<br><div class="quality-badge">Quality: <strong>${result.score}/100</strong> | RSI: ${result.indicators.rsi.toFixed(1)}</div>`;
         }
         this.statusDesc.innerHTML = detailsHtml;
     }
@@ -234,7 +232,6 @@ class NovaUIController {
         }).join('');
     }
 
-    // Draggable Utility
     makeDraggable(element, handle, storageKey) {
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
         const dragMouseDown = (e) => {
