@@ -13,32 +13,30 @@
     --text-muted: #a0aec0;
     --input-bg: rgba(7, 12, 25, 0.6);
     --input-border: rgba(255, 255, 255, 0.08);
+    --color-up: #00ff88;
+    --color-down: #ff4d4d;
+    --color-wait: #f39c12;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 body { background-color: var(--bg-dark); overflow: hidden; }
 
-/* =========================================
-   DEMO CHART BACKGROUND
-========================================= */
+/* Demo Chart Background */
 #nova-chart-container {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: var(--chart-bg); z-index: 0;
     display: flex; flex-direction: column;
 }
-
 .demo-watermark {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-size: 4vw; font-weight: 800; color: rgba(255, 255, 255, 0.03);
     pointer-events: none; z-index: 1; letter-spacing: 5px; white-space: nowrap;
 }
-
 .chart-section { position: relative; width: 100%; display: block; }
 .main-chart { height: 80%; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 .rsi-chart { height: 20%; background: rgba(5, 8, 15, 0.5); }
 canvas { display: block; width: 100%; height: 100%; }
 
-/* Chart Overlay UI Elements */
 .price-pill-container {
     position: absolute; top: 50%; right: 0; width: 100%;
     display: flex; align-items: center; justify-content: flex-end;
@@ -54,7 +52,6 @@ canvas { display: block; width: 100%; height: 100%; }
     font-size: 12px; font-weight: 700;
     box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
 }
-
 .vertical-timing-line {
     position: absolute; top: 0; bottom: 0; right: 25%;
     border-left: 1px dashed #fff; opacity: 0.5; pointer-events: none;
@@ -63,27 +60,20 @@ canvas { display: block; width: 100%; height: 100%; }
     position: absolute; top: 20px; right: 10px;
     font-size: 10px; color: #fff; white-space: nowrap;
 }
-
-/* RSI Overlay UI */
 .rsi-header {
     position: absolute; top: 10px; left: 20px;
     background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px;
     font-size: 11px; color: #fff; display: flex; align-items: center; gap: 4px;
 }
-.rsi-level {
-    position: absolute; right: 10px; font-size: 10px; color: var(--text-muted);
-}
+.rsi-level { position: absolute; right: 10px; font-size: 10px; color: var(--text-muted); }
 .level-70 { top: 25%; } .level-30 { bottom: 25%; }
 
-/* =========================================
-   MAIN APP OVERLAYS (Scanner, Panel, etc.)
-========================================= */
+/* Scanner Overlay */
 #nova-ai-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     pointer-events: none; z-index: 9999; color: var(--text-main);
 }
 #nova-robot-avatar, #nova-main-panel, #nova-minimized-launcher { pointer-events: auto; z-index: 1001; }
-
 #nova-scanner-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     display: flex; justify-content: center; align-items: center; z-index: 1000;
@@ -127,7 +117,7 @@ canvas { display: block; width: 100%; height: 100%; }
 @keyframes spinRings { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 @keyframes sweepLaser { 0% { transform: rotate(-25deg) translateY(-80px); } 100% { transform: rotate(25deg) translateY(80px); } }
 
-/* Floating Elements & Panel (Same as Step 3) */
+/* Floating Elements & Panels */
 .nova-robot-container { position: absolute; top: 20px; right: 30px; display: flex; align-items: center; gap: 15px; cursor: grab; user-select: none; touch-action: none; }
 .nova-robot-container:active { cursor: grabbing; }
 .drag-tooltip { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--cyan-primary); padding: 6px 12px; border-radius: 20px; font-size: 11px; color: var(--cyan-primary); display: flex; align-items: center; gap: 6px; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); pointer-events: none; }
@@ -167,13 +157,35 @@ canvas { display: block; width: 100%; height: 100%; }
 .mode-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; background: transparent; border: none; color: var(--text-muted); padding: 8px 0; font-size: 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
 .mode-btn.active { background: rgba(0, 85, 255, 0.4); color: var(--cyan-primary); border: 1px solid rgba(0, 210, 255, 0.3); }
 
-.status-box { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-top: 5px; }
+/* --- Status Box & Indicator Signals --- */
+.status-box { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-top: 5px; transition: border-color 0.3s; }
 .status-ring { width: 32px; height: 32px; border-radius: 50%; border: 2px dashed var(--cyan-primary); display: flex; justify-content: center; align-items: center; transition: 0.3s; }
 .status-ring.scanning { animation: spin 2s linear infinite; border-style: solid; border-top-color: transparent; }
-.ring-inner { width: 16px; height: 16px; border-radius: 50%; background: var(--cyan-primary); box-shadow: 0 0 10px var(--cyan-primary); }
+.ring-inner { width: 16px; height: 16px; border-radius: 50%; background: var(--cyan-primary); box-shadow: 0 0 10px var(--cyan-primary); transition: 0.3s; }
+
+/* Dynamic Signal Colors */
+.signal-UP .status-ring { border-color: var(--color-up); }
+.signal-UP .ring-inner { background: var(--color-up); box-shadow: 0 0 10px var(--color-up); }
+.signal-UP h3 { color: var(--color-up); }
+
+.signal-DOWN .status-ring { border-color: var(--color-down); }
+.signal-DOWN .ring-inner { background: var(--color-down); box-shadow: 0 0 10px var(--color-down); }
+.signal-DOWN h3 { color: var(--color-down); }
+
+.signal-WAIT .status-ring { border-color: var(--color-wait); }
+.signal-WAIT .ring-inner { background: var(--color-wait); box-shadow: 0 0 10px var(--color-wait); }
+.signal-WAIT h3 { color: var(--color-wait); }
+
+.signal-UNAVAILABLE .status-ring { border-color: var(--text-muted); }
+.signal-UNAVAILABLE .ring-inner { background: var(--text-muted); box-shadow: none; }
+.signal-UNAVAILABLE h3 { color: var(--text-muted); }
+
+.quality-badge { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 9px; display: inline-block; margin-top: 6px; color: var(--text-muted); }
+.demo-badge { background: rgba(255, 77, 77, 0.15); border: 1px solid rgba(255, 77, 77, 0.5); color: #ff4d4d; padding: 2px 6px; border-radius: 4px; font-size: 9px; margin-left: 8px; vertical-align: middle; }
+
 @keyframes spin { 100% { transform: rotate(360deg); } }
-.status-text h3 { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
-.status-text p { font-size: 11px; color: var(--text-muted); }
+.status-text h3 { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; }
+.status-text p { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
 .panel-footer { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.2); }
 .footer-logo { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--cyan-primary); font-weight: 600; }
 .mini-robot { width: 14px; height: 14px; background: var(--cyan-primary); border-radius: 50%; box-shadow: 0 0 5px var(--cyan-primary); }
@@ -188,5 +200,4 @@ canvas { display: block; width: 100%; height: 100%; }
 .minimized-text h4 { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
 .minimized-text p { font-size: 10px; color: var(--text-muted); }
 .expand-icon { color: var(--cyan-primary); display: flex; align-items: center; margin-left: 5px; }
-
 .hidden { display: none !important; }
