@@ -258,7 +258,7 @@ class NovaUIController {
                 return;
             }
 
-            // মার্কেট সফলভাবে খুঁজে পেলে
+            // মার্কেট সফলভাবে খুঁজে পেলে এনালাইসিস করবে
             const analysisResult = this.indicator.analyze(candles, false);
             
             const selectedMarket = this.currentMarketEl.innerText.trim();
@@ -267,7 +267,7 @@ class NovaUIController {
             analysisResult.symbol = (marketData.symbol && marketData.symbol !== 'UNKNOWN') ? marketData.symbol : (selectedMarket || "EUR/USD");
             analysisResult.timeframe = selectedTf;
             
-            // যুক্ত করা হলো মার্কেট পাওয়ার নিশ্চিতকরণ মেসেজ
+            // মার্কেট পাওয়ার সফল বার্তা যুক্ত করা হলো
             analysisResult.reason = `Market Found! Analyzing indicators... ${analysisResult.reason}`;
 
             if (this.history) {
