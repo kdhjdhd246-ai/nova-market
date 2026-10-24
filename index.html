@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- DEMO CHART SIMULATOR (Background) -->
+    <!-- DEMO CHART SIMULATOR -->
     <div id="nova-chart-container">
         <div class="demo-watermark">DEMO CHART - NOT LIVE DATA</div>
         
@@ -37,6 +37,7 @@
 
     <!-- MAIN NOVA AI OVERLAY -->
     <div id="nova-ai-overlay">
+        
         <!-- Scanning Animation Overlay -->
         <div id="nova-scanner-overlay" class="hidden">
             <div class="scan-backdrop"></div>
@@ -137,9 +138,10 @@
                     </div>
                 </div>
 
-                <div class="status-box">
+                <!-- Status Indicator Box -->
+                <div class="status-box" id="ui-status-box">
                     <div class="status-ring" id="ui-status-ring">
-                        <div class="ring-inner"></div>
+                        <div class="ring-inner" id="ui-ring-inner"></div>
                     </div>
                     <div class="status-text">
                         <h3 id="ui-status-title">Ready to scan</h3>
@@ -174,11 +176,11 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 15l-6-6-6 6"/></svg>
             </div>
         </div>
-
     </div>
 
-    <!-- Scripts -->
-    <script src="demo-chart.js"></script> <!-- NEW FILE -->
+    <!-- Scripts (Order is important) -->
+    <script src="demo-chart.js"></script>
+    <script src="indicator-engine.js"></script>
     <script src="scanner-engine.js"></script>
     <script src="app.js"></script>
 </body>
