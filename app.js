@@ -240,33 +240,36 @@ class NovaUIController {
             this.startScanBtn.querySelector('span').innerText = 'START SCAN';
             
             if (!this.adapter || !this.indicator) {
-                this.updateUIWithResult({ signal: 'WAIT', score: 0, reason: 'Market Not Found: System engines failed to load.', isDemo: false });
+                this.updateUIWithResult({ signal: 'WAIT', score: 0, reason: 'Market Chart Not Detected: System engines failed to load.', isDemo: false });
                 return;
             }
 
             const marketData = this.adapter.fetchData();
             let candles = marketData.candles;
 
-            // যদি প্ল্যাটফর্ম থেকে কোনো ক্যান্ডেল বা মার্কেট ডেটা না পাওয়া যায়
+            // যদি ক্যান্ডেল বা চার্ট ডেটা না পাওয়া যায়
             if (!candles || candles.length === 0) {
                 this.updateUIWithResult({
                     signal: 'WAIT',
                     score: 0,
-                    reason: 'Market Not Found: Active market candles could not be detected on the page.',
+                    reason: 'Market Chart Not Detected: Please ensure the asset chart is fully visible on the screen.',
                     isDemo: false
                 });
                 return;
             }
 
-            // মার্কেট খুঁজে পেলে এনালাইসিস করে আপ বা ডাউন সিগন্যাল জেনারেট করবে
+            // মার্কেট সফলভাবে খুঁজে পেলে
             const analysisResult = this.indicator.analyze(candles, false);
             
             const selectedMarket = this.currentMarketEl.innerText.trim();
-            const selectedTf = this.currentTimeframeEl.querySelector('span') ? this.currentTimeframeEl.querySelector('span'].innerText.trim() : "1 minute";
+            const selectedTf = this.currentTimeframeEl.querySelector('span') ? this.currentTimeframeEl.querySelector('span').innerText.trim() : "1 minute";
 
             analysisResult.symbol = (marketData.symbol && marketData.symbol !== 'UNKNOWN') ? marketData.symbol : (selectedMarket || "EUR/USD");
             analysisResult.timeframe = selectedTf;
             
+            // যুক্ত করা হলো মার্কেট পাওয়ার নিশ্চিতকরণ মেসেজ
+            analysisResult.reason = `Market Found! Analyzing indicators... ${analysisResult.reason}`;
+
             if (this.history) {
                 this.history.addScan(analysisResult);
                 this.renderHistory();
