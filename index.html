@@ -12,6 +12,25 @@
 
     <!-- MAIN NOVA AI OVERLAY -->
     <div id="nova-ai-overlay">
+
+        <!-- Scanning Animation Overlay (Hidden by default) -->
+        <div id="nova-scanner-overlay" class="hidden">
+            <div class="scan-backdrop"></div>
+            <div class="radar-container">
+                <div class="radar-ring ring-1"></div>
+                <div class="radar-ring ring-2"></div>
+                <div class="radar-ring ring-3"></div>
+                <div class="radar-crosshair"></div>
+                <div class="laser-beam"></div>
+                <div class="particles-container" id="nova-particles"></div>
+            </div>
+            <div class="scan-progress-box">
+                <div class="scan-text">SCANNING...</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="scan-progress-fill"></div>
+                </div>
+            </div>
+        </div>
         
         <!-- Floating Robot Avatar -->
         <div class="nova-robot-container" id="nova-robot-avatar">
@@ -34,7 +53,6 @@
 
         <!-- Glassmorphism Control Panel -->
         <div class="nova-panel" id="nova-main-panel">
-            <!-- Header (Drag Handle) -->
             <div class="panel-header" id="nova-panel-handle">
                 <div class="header-left">
                     <div class="logo-circle">N</div>
@@ -48,14 +66,12 @@
                 </button>
             </div>
 
-            <!-- Tabs -->
             <div class="panel-tabs">
                 <button class="tab-btn active">Scan</button>
                 <button class="tab-btn">History</button>
                 <button class="tab-btn">Settings</button>
             </div>
 
-            <!-- Content Area (Scan Mode) -->
             <div class="panel-content">
                 <div class="input-section">
                     <label><span class="dot cyan"></span> Market</label>
@@ -78,9 +94,9 @@
                     </div>
                 </div>
 
-                <button class="btn-start-scan">
+                <button class="btn-start-scan" id="btn-start-scan">
                     <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    START SCAN
+                    <span>START SCAN</span>
                 </button>
 
                 <div class="input-section mt-15">
@@ -98,17 +114,16 @@
                 </div>
 
                 <div class="status-box">
-                    <div class="status-ring">
+                    <div class="status-ring" id="ui-status-ring">
                         <div class="ring-inner"></div>
                     </div>
                     <div class="status-text">
-                        <h3>Ready to scan</h3>
-                        <p>Click START SCAN to begin analysis</p>
+                        <h3 id="ui-status-title">Ready to scan</h3>
+                        <p id="ui-status-desc">Click START SCAN to begin analysis</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Footer -->
             <div class="panel-footer">
                 <div class="footer-logo">
                     <div class="mini-robot"></div>
@@ -118,7 +133,7 @@
             </div>
         </div>
 
-        <!-- Compact Minimized Launcher (Bottom Left) -->
+        <!-- Compact Minimized Launcher -->
         <div class="nova-minimized hidden" id="nova-minimized-launcher">
             <div class="mini-robot-avatar">
                 <div class="robot-face-mini">
@@ -138,7 +153,8 @@
 
     </div>
 
-    <!-- UI Logic Script -->
+    <!-- Scripts -->
+    <script src="scanner-engine.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
