@@ -2,7 +2,7 @@
 
 :root {
     --bg-dark: #0a0f1d;
-    --panel-bg: rgba(13, 20, 38, 0.75);
+    --panel-bg: rgba(13, 20, 38, 0.85);
     --panel-border: rgba(0, 210, 255, 0.25);
     --cyan-glow: rgba(0, 210, 255, 0.5);
     --cyan-primary: #00d2ff;
@@ -13,407 +13,212 @@
     --input-border: rgba(255, 255, 255, 0.08);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-body {
-    background-color: var(--bg-dark);
-    overflow: hidden; /* App acts as an overlay */
-}
+body { background-color: var(--bg-dark); overflow: hidden; }
 
-/* Background simulator for local testing to mimic Quotex Chart */
 .quotex-bg-simulator {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: radial-gradient(circle at 30% 50%, #111a33 0%, #0a0f1d 100%);
-    background-size: cover;
-    z-index: 0;
+    background-size: cover; z-index: 0;
 }
 
-/* Base Wrapper for isolation */
 #nova-ai-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none; /* Let clicks pass through to chart */
-    z-index: 9999;
-    color: var(--text-main);
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none; z-index: 9999; color: var(--text-main);
 }
 
-/* Re-enable pointer events for UI elements */
-#nova-robot-avatar, #nova-main-panel {
+#nova-robot-avatar, #nova-main-panel, #nova-minimized-launcher {
     pointer-events: auto;
 }
 
-/* =========================================
-   FLOATING ROBOT AVATAR
-========================================= */
+/* Floating Robot Avatar */
 .nova-robot-container {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: grab;
+    position: absolute; top: 20px; right: 30px;
+    display: flex; align-items: center; gap: 15px; cursor: grab;
+    user-select: none; touch-action: none;
 }
+.nova-robot-container:active { cursor: grabbing; }
 
 .drag-tooltip {
-    background: rgba(0, 210, 255, 0.1);
-    border: 1px solid var(--cyan-primary);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    color: var(--cyan-primary);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    background: rgba(0, 210, 255, 0.1); border: 1px solid var(--cyan-primary);
+    padding: 6px 12px; border-radius: 20px; font-size: 11px;
+    color: var(--cyan-primary); display: flex; align-items: center; gap: 6px;
     box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+    pointer-events: none;
 }
 
 .robot-circle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    width: 60px; height: 60px; border-radius: 50%;
     background: radial-gradient(circle at center, #0b1428 0%, #060b17 100%);
     border: 2px solid var(--cyan-primary);
     box-shadow: 0 0 20px rgba(0, 210, 255, 0.4), inset 0 0 10px rgba(0, 210, 255, 0.3);
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative; display: flex; justify-content: center; align-items: center;
 }
 
-.robot-face {
-    width: 30px;
-    height: 20px;
-    position: relative;
-}
-
+.robot-face { width: 30px; height: 20px; position: relative; }
 .robot-face .eye {
-    width: 8px;
-    height: 8px;
-    background: var(--cyan-primary);
-    border-radius: 50%;
-    position: absolute;
-    top: 0;
-    box-shadow: 0 0 8px var(--cyan-primary);
+    width: 8px; height: 8px; background: var(--cyan-primary);
+    border-radius: 50%; position: absolute; top: 0; box-shadow: 0 0 8px var(--cyan-primary);
 }
-
-.robot-face .eye.left { left: 2px; }
-.robot-face .eye.right { right: 2px; }
-
+.robot-face .eye.left { left: 2px; } .robot-face .eye.right { right: 2px; }
 .robot-face .mouth {
-    width: 14px;
-    height: 3px;
-    background: var(--cyan-primary);
-    border-radius: 2px;
-    position: absolute;
-    bottom: 0;
-    left: 8px;
+    width: 14px; height: 3px; background: var(--cyan-primary);
+    border-radius: 2px; position: absolute; bottom: 0; left: 8px;
     box-shadow: 0 0 5px var(--cyan-primary);
 }
 
 .badge-n {
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    width: 22px;
-    height: 22px;
-    background: var(--cyan-primary);
-    color: var(--bg-dark);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 800;
-    font-size: 12px;
-    box-shadow: 0 0 10px var(--cyan-primary);
+    position: absolute; top: -5px; left: -5px; width: 22px; height: 22px;
+    background: var(--cyan-primary); color: var(--bg-dark); border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: 800; font-size: 12px; box-shadow: 0 0 10px var(--cyan-primary);
 }
 
 .close-robot {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--input-bg);
-    border: 1px solid var(--panel-border);
-    color: var(--cyan-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: 0.3s;
+    width: 24px; height: 24px; border-radius: 50%; background: var(--input-bg);
+    border: 1px solid var(--panel-border); color: var(--cyan-primary);
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; transition: 0.3s;
 }
+.close-robot:hover { background: rgba(0, 210, 255, 0.2); }
 
-.close-robot:hover {
-    background: rgba(0, 210, 255, 0.2);
-}
-
-/* =========================================
-   GLASSMORPHISM CONTROL PANEL
-========================================= */
+/* Glassmorphism Control Panel */
 .nova-panel {
-    position: absolute;
-    top: 100px;
-    right: 30px;
-    width: 320px;
-    background: var(--panel-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--panel-border);
-    border-radius: 16px;
+    position: absolute; top: 100px; right: 30px; width: 320px;
+    background: var(--panel-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border); border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 210, 255, 0.15);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    display: flex; flex-direction: column; overflow: hidden;
+    user-select: none;
 }
 
 .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: grab; touch-action: none;
 }
+.panel-header:active { cursor: grabbing; }
 
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
+.header-left { display: flex; align-items: center; gap: 12px; pointer-events: none; }
 .logo-circle {
-    width: 28px;
-    height: 28px;
-    background: var(--cyan-primary);
-    color: var(--bg-dark);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 800;
-    font-size: 14px;
-    box-shadow: 0 0 10px var(--cyan-primary);
+    width: 28px; height: 28px; background: var(--cyan-primary); color: var(--bg-dark);
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    font-weight: 800; font-size: 14px; box-shadow: 0 0 10px var(--cyan-primary);
 }
-
-.header-titles h2 {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-.header-titles p {
-    font-size: 10px;
-    color: var(--text-muted);
-}
+.header-titles h2 { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; }
+.header-titles p { font-size: 10px; color: var(--text-muted); }
 
 .btn-close-panel {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 4px;
-    transition: color 0.3s;
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; padding: 4px; transition: color 0.3s;
 }
+.btn-close-panel:hover { color: white; }
 
-.btn-close-panel:hover {
-    color: white;
-}
-
-.panel-tabs {
-    display: flex;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 10px 16px;
-    gap: 8px;
-}
-
+.panel-tabs { display: flex; background: rgba(0, 0, 0, 0.2); padding: 10px 16px; gap: 8px; }
 .tab-btn {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 8px 0;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: 0.3s;
+    flex: 1; background: transparent; border: none; color: var(--text-muted);
+    padding: 8px 0; font-size: 12px; font-weight: 600; border-radius: 20px;
+    cursor: pointer; transition: 0.3s;
 }
-
 .tab-btn.active {
-    background: linear-gradient(90deg, #0055ff, var(--cyan-primary));
-    color: white;
-    box-shadow: 0 0 10px rgba(0, 150, 255, 0.4);
+    background: linear-gradient(90deg, var(--cyan-secondary), var(--cyan-primary));
+    color: white; box-shadow: 0 0 10px rgba(0, 150, 255, 0.4);
 }
 
-.panel-content {
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.input-section label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-}
-
-.dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-}
+.panel-content { padding: 20px 16px; display: flex; flex-direction: column; gap: 15px; }
+.input-section label { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.dot { width: 4px; height: 4px; border-radius: 50%; }
 .dot.cyan { background: var(--cyan-primary); box-shadow: 0 0 5px var(--cyan-primary); }
 .dot.green { background: #00ff88; box-shadow: 0 0 5px #00ff88; }
 
 .custom-select {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    padding: 10px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--input-bg); border: 1px solid var(--input-border);
+    padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
 }
-
-.select-value {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+.select-value { display: flex; align-items: center; gap: 8px; }
 
 .btn-start-scan {
-    width: 100%;
-    background: linear-gradient(90deg, var(--cyan-secondary), var(--cyan-primary));
-    color: var(--bg-dark);
-    border: none;
-    padding: 14px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    box-shadow: 0 0 15px var(--cyan-glow);
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin-top: 5px;
+    width: 100%; background: linear-gradient(90deg, var(--cyan-secondary), var(--cyan-primary));
+    color: var(--bg-dark); border: none; padding: 14px; border-radius: 8px;
+    font-size: 14px; font-weight: 700; display: flex; justify-content: center;
+    align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 0 15px var(--cyan-glow);
+    transition: transform 0.2s, box-shadow 0.2s; margin-top: 5px;
 }
-
-.btn-start-scan:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
-}
+.btn-start-scan:hover { transform: translateY(-1px); box-shadow: 0 0 25px rgba(0, 210, 255, 0.6); }
 
 .mt-15 { margin-top: 15px; }
-
-.mode-toggle {
-    display: flex;
-    background: var(--input-bg);
-    border-radius: 8px;
-    padding: 4px;
-    border: 1px solid var(--input-border);
-}
-
+.mode-toggle { display: flex; background: var(--input-bg); border-radius: 8px; padding: 4px; border: 1px solid var(--input-border); }
 .mode-btn {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 8px 0;
-    font-size: 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
+    flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px;
+    background: transparent; border: none; color: var(--text-muted);
+    padding: 8px 0; font-size: 12px; border-radius: 6px; cursor: pointer; transition: 0.3s;
 }
-
 .mode-btn.active {
-    background: rgba(0, 85, 255, 0.4);
-    color: var(--cyan-primary);
+    background: rgba(0, 85, 255, 0.4); color: var(--cyan-primary);
     border: 1px solid rgba(0, 210, 255, 0.3);
 }
 
 .status-box {
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-top: 5px;
+    background: var(--input-bg); border: 1px solid var(--input-border);
+    border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-top: 5px;
 }
-
 .status-ring {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px dashed var(--cyan-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: spin 6s linear infinite;
+    width: 32px; height: 32px; border-radius: 50%; border: 2px dashed var(--cyan-primary);
+    display: flex; justify-content: center; align-items: center; animation: spin 6s linear infinite;
 }
-
 .ring-inner {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--cyan-primary);
+    width: 16px; height: 16px; border-radius: 50%; background: var(--cyan-primary);
     box-shadow: 0 0 10px var(--cyan-primary);
 }
-
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-.status-text h3 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 4px;
-}
-
-.status-text p {
-    font-size: 11px;
-    color: var(--text-muted);
-}
+.status-text h3 { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+.status-text p { font-size: 11px; color: var(--text-muted); }
 
 .panel-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(0, 0, 0, 0.2);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; border-top: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.2);
 }
-
-.footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--cyan-primary);
-    font-weight: 600;
-}
-
+.footer-logo { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--cyan-primary); font-weight: 600; }
 .mini-robot {
-    width: 14px;
-    height: 14px;
-    background: var(--cyan-primary);
-    border-radius: 50%;
-    box-shadow: 0 0 5px var(--cyan-primary);
+    width: 14px; height: 14px; background: var(--cyan-primary); border-radius: 50%; box-shadow: 0 0 5px var(--cyan-primary);
 }
+
+/* Compact Minimized Launcher */
+.nova-minimized {
+    position: absolute; bottom: 20px; left: 20px;
+    background: var(--panel-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border); border-radius: 30px;
+    padding: 8px 16px 8px 8px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 210, 255, 0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+}
+.nova-minimized:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 210, 255, 0.25); }
+
+.mini-robot-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: radial-gradient(circle at center, #0b1428 0%, #060b17 100%);
+    border: 1.5px solid var(--cyan-primary);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+    display: flex; justify-content: center; align-items: center;
+}
+.robot-face-mini { width: 16px; height: 10px; position: relative; }
+.robot-face-mini .eye {
+    width: 4px; height: 4px; background: var(--cyan-primary); border-radius: 50%;
+    position: absolute; top: 0; box-shadow: 0 0 4px var(--cyan-primary);
+}
+.robot-face-mini .eye.left { left: 1px; } .robot-face-mini .eye.right { right: 1px; }
+.robot-face-mini .mouth {
+    width: 8px; height: 2px; background: var(--cyan-primary); border-radius: 1px;
+    position: absolute; bottom: 0; left: 4px;
+}
+
+.minimized-text h4 { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.minimized-text p { font-size: 10px; color: var(--text-muted); }
+.expand-icon { color: var(--cyan-primary); display: flex; align-items: center; margin-left: 5px; }
+
+/* Utility Classes */
+.hidden { display: none !important; }
