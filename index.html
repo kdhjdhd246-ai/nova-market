@@ -3,62 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOVA MARKET AI - Development UI</title>
+    <title>NOVA MARKET AI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- DEMO CHART SIMULATOR -->
-    <div id="nova-chart-container">
-        <div class="demo-watermark">DEMO CHART - NOT LIVE DATA</div>
-        <div class="chart-section main-chart">
-            <canvas id="main-chart-canvas"></canvas>
-            <div class="price-pill-container" id="current-price-pill">
-                <div class="price-line"></div>
-                <div class="price-pill">1.12278</div>
-            </div>
-            <div class="vertical-timing-line"><span>Beginning of trade</span></div>
-        </div>
-        <div class="chart-section rsi-chart">
-            <div class="rsi-header">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 12l6-6 4 4 6-6"/></svg> RSI 14
-            </div>
-            <canvas id="rsi-chart-canvas"></canvas>
-            <div class="rsi-level level-70">70</div>
-            <div class="rsi-level level-30">30</div>
-        </div>
-    </div>
-
-    <!-- MAIN NOVA AI OVERLAY -->
+    <!-- MAIN NOVA AI OVERLAY (Background chart removed for live trading platform overlay) -->
     <div id="nova-ai-overlay">
+        
         <!-- Scanning Animation Overlay -->
         <div id="nova-scanner-overlay" class="hidden">
             <div class="scan-backdrop"></div>
             <div class="radar-container">
-                <div class="radar-ring ring-1"></div><div class="radar-ring ring-2"></div><div class="radar-ring ring-3"></div>
-                <div class="radar-crosshair"></div><div class="laser-beam"></div>
+                <div class="radar-ring ring-1"></div>
+                <div class="radar-ring ring-2"></div>
+                <div class="radar-ring ring-3"></div>
+                <div class="radar-crosshair"></div>
+                <div class="laser-beam"></div>
                 <div class="particles-container" id="nova-particles"></div>
             </div>
             <div class="scan-progress-box">
                 <div class="scan-text">SCANNING...</div>
-                <div class="progress-bar-container"><div class="progress-bar-fill" id="scan-progress-fill"></div></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="scan-progress-fill"></div>
+                </div>
             </div>
         </div>
         
         <!-- Floating Robot Avatar -->
         <div class="nova-robot-container" id="nova-robot-avatar">
-            <div class="drag-tooltip"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 5v14M5 12h14M12 5l-3 3M12 5l3 3M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3"/></svg> Drag to move</div>
+            <div class="drag-tooltip">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 5v14M5 12h14M12 5l-3 3M12 5l3 3M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3"/></svg>
+                Drag to move
+            </div>
             <div class="robot-circle">
-                <div class="robot-face"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
+                <div class="robot-face">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="mouth"></div>
+                </div>
                 <div class="badge-n">N</div>
             </div>
-            <button class="close-robot" aria-label="Close Robot"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <button class="close-robot" aria-label="Close Robot">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
         </div>
 
         <!-- Glassmorphism Control Panel -->
         <div class="nova-panel" id="nova-main-panel">
             <div class="panel-header" id="nova-panel-handle">
-                <div class="header-left"><div class="logo-circle">N</div><div class="header-titles"><h2>NOVA MARKET AI</h2><p>Smart Market Scanner</p></div></div>
-                <button class="btn-close-panel" aria-label="Minimize Panel"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                <div class="header-left">
+                    <div class="logo-circle">N</div>
+                    <div class="header-titles">
+                        <h2>NOVA MARKET AI</h2>
+                        <p>Smart Market Scanner</p>
+                    </div>
+                </div>
+                <button class="btn-close-panel" aria-label="Minimize Panel">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
             </div>
 
             <div class="panel-tabs">
@@ -79,7 +81,8 @@
                         <div class="custom-select"><div class="select-value" id="current-timeframe"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 1 minute</div><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 9l6 6 6-6"/></svg></div>
                     </div>
                     <button class="btn-start-scan" id="btn-start-scan">
-                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span>START SCAN</span>
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <span>START SCAN</span>
                     </button>
                     <div class="input-section mt-15">
                         <label><span class="dot green"></span> Scan Mode</label>
@@ -128,28 +131,35 @@
                     </div>
                     <div class="input-section mt-15">
                         <label>Safe Storage</label>
-                        <p class="setting-desc" style="margin-bottom: 8px;">Settings and history are saved locally in your browser.</p>
+                        <p class="setting-desc" style="margin-bottom: 8px;">Settings and history are saved locally.</p>
                         <button class="btn-danger-outline w-100" id="btn-reset-app">Reset Factory Settings</button>
                     </div>
                 </div>
             </div>
 
             <div class="panel-footer">
-                <div class="footer-logo"><div class="mini-robot"></div><span>NOVA AI • Trade Smarter</span></div>
+                <div class="footer-logo">
+                    <div class="mini-robot"></div>
+                    <span>NOVA AI • Trade Smarter</span>
+                </div>
                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 20V10M12 20V4M6 20v-4"/></svg>
             </div>
         </div>
 
-        <!-- Compact Launcher -->
+        <!-- Compact Minimized Launcher -->
         <div class="nova-minimized hidden" id="nova-minimized-launcher">
-            <div class="mini-robot-avatar"><div class="robot-face-mini"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div></div>
-            <div class="minimized-text"><h4>NOVA</h4><p>Tap to open</p></div>
+            <div class="mini-robot-avatar">
+                <div class="robot-face-mini"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
+            </div>
+            <div class="minimized-text">
+                <h4>NOVA</h4>
+                <p>Tap to open</p>
+            </div>
             <div class="expand-icon"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 15l-6-6-6 6"/></svg></div>
         </div>
     </div>
 
-    <!-- Scripts (Order MUST be strictly maintained) -->
-    <script src="demo-chart.js"></script>
+    <!-- Scripts -->
     <script src="data-adapter.js"></script>
     <script src="indicator-engine.js"></script>
     <script src="scanner-engine.js"></script>
