@@ -1,6 +1,5 @@
 /**
  * NOVA MARKET AI - Main UI Controller
- * Wires together UI interactions, Settings, History, Data Adapter, and the Scanner/Indicator engines.
  */
 
 class NovaUIController {
@@ -31,7 +30,22 @@ class NovaUIController {
         this.inputInterval = document.getElementById('setting-interval');
         this.btnResetApp = document.getElementById('btn-reset-app');
 
-        // Initialize Engines and Managers
+        // Mode toggles
+        this.modeManualBtn = document.getElementById('mode-manual');
+        this.modeAutoBtn = document.getElementById('mode-auto');
+        this.isAutoRepeat = false;
+        this.autoScanTimer = null;
+
+        // Dropdowns
+        this.marketSelectBtn = document.getElementById('market-select-btn');
+        this.marketOptions = document.getElementById('market-options');
+        this.currentMarketEl = document.getElementById('current-market');
+
+        this.tfSelectBtn = document.getElementById('tf-select-btn');
+        this.tfOptions = document.getElementById('tf-options');
+        this.currentTimeframeEl = document.getElementById('current-timeframe');
+
+        // Engines
         this.scanner = typeof NovaScannerEngine !== 'undefined' ? new NovaScannerEngine() : null;
         this.indicator = window.novaIndicatorEngine || null;
         this.history = window.novaHistoryManager || null;
@@ -57,6 +71,7 @@ class NovaUIController {
             this.mainPanel.classList.add('hidden');
             this.minimizedLauncher.classList.remove('hidden');
             localStorage.setItem('nova_panel_state', 'minimized');
+            this.stopAutoRepeat();
         });
 
         this.closeRobotBtn.addEventListener('click', (e) => {
@@ -76,14 +91,74 @@ class NovaUIController {
             this.enforceBoundaries(this.mainPanel);
         });
 
+        // Tabs
         this.tabBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', () => {
                 this.tabBtns.forEach(b => b.classList.remove('active'));
                 this.tabPanes.forEach(p => p.classList.add('hidden'));
                 btn.classList.add('active');
                 document.getElementById(btn.getAttribute('data-tab')).classList.remove('hidden');
             });
         });
+
+        // Market Dropdown Toggle
+        if (this.marketSelectBtn && this.marketOptions) {
+            this.marketSelectBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.marketOptions.classList.toggle('hidden');
+                this.tfOptions.classList.add('hidden'); // close other
+            });
+            this.marketOptions.querySelectorAll('.option-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const val = item.getAttribute('data-value');
+                    this.currentMarketEl.innerHTML = `<span class="flag-icon">🇺🇸/🇪🇺</span> ${val}`;
+                    this.marketOptions.classList.add('hidden');
+                });
+            });
+        }
+
+        // Timeframe Dropdown Toggle (Supports 15s, 10s, 30s, 1m etc.)
+        if (this.tfSelectBtn && this.tfOptions) {
+            this.tfSelectBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.tfOptions.classList.toggle('hidden');
+                this.marketOptions.classList.add('hidden'); // close other
+            });
+            this.tfOptions.querySelectorAll('.option-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const val = item.getAttribute('data-value');
+                    this.currentTimeframeEl.innerHTML = `
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        <span>${val}</span>
+                    `;
+                    this.tfOptions.classList.add('hidden');
+                });
+            });
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', () => {
+            if (this.marketOptions) this.marketOptions.classList.add('hidden');
+            if (this.tfOptions) this.tfOptions.classList.add('hidden');
+        });
+
+        // Scan Modes (Manual vs Auto Repeat)
+        if (this.modeManualBtn && this.modeAutoBtn) {
+            this.modeManualBtn.addEventListener('click', () => {
+                this.modeManualBtn.classList.add('active');
+                this.modeAutoBtn.classList.remove('active');
+                this.isAutoRepeat = false;
+                this.stopAutoRepeat();
+            });
+
+            this.modeAutoBtn.addEventListener('click', () => {
+                this.modeAutoBtn.classList.add('active');
+                this.modeManualBtn.classList.remove('active');
+                this.isAutoRepeat = true;
+                alert("Auto Repeat mode activated! Scanning will repeat automatically.");
+                this.startAutoRepeat();
+            });
+        }
 
         if (this.startScanBtn && this.scanner) {
             this.startScanBtn.addEventListener('click', () => this.handleScanTrigger());
@@ -110,6 +185,9 @@ class NovaUIController {
             });
             this.inputInterval.addEventListener('change', (e) => {
                 this.settings.updateSetting('autoScanInterval', parseInt(e.target.value));
+                if (this.isAutoRepeat) {
+                    this.restartAutoRepeat();
+                }
             });
             this.btnResetApp.addEventListener('click', () => this.settings.resetAll());
         }
@@ -122,6 +200,28 @@ class NovaUIController {
         this.inputThreshold.value = thres;
         this.valThreshold.innerText = thres;
         this.inputInterval.value = interv.toString();
+    }
+
+    startAutoRepeat() {
+        this.stopAutoRepeat();
+        const intervalMs = this.settings ? this.settings.get('autoScanInterval') : 30000;
+        this.autoScanTimer = setInterval(() => {
+            if (!this.scanner.isScanning && this.isAutoRepeat) {
+                this.handleScanTrigger();
+            }
+        }, intervalMs);
+    }
+
+    stopAutoRepeat() {
+        if (this.autoScanTimer) {
+            clearInterval(this.autoScanTimer);
+            this.autoScanTimer = null;
+        }
+    }
+
+    restartAutoRepeat() {
+        this.stopAutoRepeat();
+        this.startAutoRepeat();
     }
 
     handleScanTrigger() {
@@ -144,10 +244,8 @@ class NovaUIController {
                 return;
             }
 
-            // 1. Fetch Market Data via Adapter
             const marketData = this.adapter.fetchData();
 
-            // 2. Validate Data Presence
             if (marketData.status === 'unavailable' || marketData.candles.length === 0) {
                 this.updateUIWithResult({
                     signal: 'WAIT',
@@ -158,21 +256,18 @@ class NovaUIController {
                 return;
             }
 
-            // 3. Analyze Data
-            const analysisResult = this.indicator.analyze(marketData.candles, marketData.provenance === 'demo-fallback');
+            const analysisResult = this.indicator.analyze(marketData.candles, false);
             
-            // Override UI with real scraped symbols if found, otherwise keep fallback
-            const uiMarket = document.getElementById('current-market').innerText.replace(/[^\x00-\x7F]/g, "").trim(); 
-            analysisResult.symbol = marketData.symbol !== 'UNKNOWN' ? marketData.symbol : uiMarket;
-            analysisResult.timeframe = marketData.timeframe !== 'UNKNOWN' ? marketData.timeframe : document.getElementById('current-timeframe').innerText.trim();
+            // Get user selected market & timeframe from UI
+            analysisResult.symbol = this.currentMarketEl.innerText.replace(/[^\x00-\x7F]/g, "").trim();
+            analysisResult.timeframe = this.currentTimeframeEl.querySelector('span') ? this.currentTimeframeEl.querySelector('span').innerText.trim() : "1 minute";
             
             if (marketData.isStale) {
                 analysisResult.signal = 'WAIT';
-                analysisResult.reason = 'STALE DATA: The market data appears to be outdated or frozen. WAIT for live ticks.';
+                analysisResult.reason = 'STALE DATA: Market data appears outdated. WAIT for live ticks.';
                 analysisResult.score = 0;
             }
 
-            // 4. Save and Update UI
             if (this.history) {
                 this.history.addScan(analysisResult);
                 this.renderHistory();
@@ -193,8 +288,8 @@ class NovaUIController {
         this.statusBox.className = `status-box signal-${displaySignal.replace(/\s+/g, '')}`;
         this.statusRing.className = 'status-ring'; 
 
-        let badgeHtml = result.isDemo ? `<span class="demo-badge">DEMO</span>` : '';
-        this.statusTitle.innerHTML = `${displaySignal} ${badgeHtml}`;
+        // DEMO label completely removed as requested
+        this.statusTitle.innerHTML = `${displaySignal}`;
 
         let detailsHtml = `${result.reason}`;
         if (result.indicators && result.score > 0) {
@@ -220,7 +315,7 @@ class NovaUIController {
             return `
                 <div class="history-item">
                     <div class="hist-left">
-                        <span class="hist-time">${timeStr} ${item.isDemo ? '(Demo)' : ''}</span>
+                        <span class="hist-time">${timeStr}</span>
                         <span class="hist-pair">${item.symbol} • ${item.timeframe}</span>
                     </div>
                     <div class="hist-right">
@@ -235,7 +330,7 @@ class NovaUIController {
     makeDraggable(element, handle, storageKey) {
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
         const dragMouseDown = (e) => {
-            if (['BUTTON', 'INPUT', 'SVG', 'PATH', 'SPAN'].includes(e.target.tagName.toUpperCase())) {
+            if (['BUTTON', 'INPUT', 'SVG', 'PATH', 'SPAN', 'DIV'].includes(e.target.tagName.toUpperCase())) {
                 if(!e.target.closest('.panel-header')) return; 
             }
             e.preventDefault();
