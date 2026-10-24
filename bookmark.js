@@ -1,5 +1,5 @@
 /**
- * NOVA MARKET AI - Cyber Theme Edition with Auto Limits (Final & Error-Free)
+ * NOVA MARKET AI - Cyber Theme with Win Notification, Auto-Minimize & Smart Martingale
  */
 (function() {
     if (document.getElementById('nova-ai-overlay')) {
@@ -12,7 +12,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         :root { --neon-blue: #00e5ff; --deep-blue: #0055ff; --bg-panel: linear-gradient(145deg, rgba(8, 15, 35, 0.95), rgba(4, 8, 20, 0.95)); --text-muted: #8496ae; }
         #nova-ai-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 999999; font-family: 'Inter', sans-serif; color: #fff; }
-        #nova-robot-avatar, #nova-main-panel { pointer-events: auto !important; z-index: 1000000; position: absolute; user-select: none; }
+        #nova-robot-avatar, #nova-main-panel, #nova-minimized-launcher, #nova-win-popup { pointer-events: auto !important; z-index: 1000000; position: absolute; user-select: none; }
         
         .nova-robot-container { position: absolute; top: 20px; right: 30px; display: flex; align-items: center; gap: 10px; cursor: grab; }
         .robot-circle { width: 50px; height: 50px; border-radius: 50%; background: #040a18; border: 2px solid var(--neon-blue); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0,229,255,0.3); }
@@ -22,7 +22,7 @@
         .robot-face .mouth { width: 10px; height: 2px; background: var(--neon-blue); position: absolute; bottom: 2px; left: 7px; }
         .close-robot { background: rgba(0,0,0,0.5); color: var(--neon-blue); border: 1px solid var(--neon-blue); border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; }
         
-        .nova-panel { position: absolute; top: 80px; right: 30px; width: 340px; background: var(--bg-panel); backdrop-filter: blur(15px); border: 1px solid rgba(0, 229, 255, 0.4); border-radius: 16px; box-shadow: 0 0 30px rgba(0,85,255,0.4); display: flex; flex-direction: column; overflow: hidden; }
+        .nova-panel { position: absolute; top: 80px; right: 30px; width: 340px; background: var(--bg-panel); backdrop-filter: blur(15px); border: 1px solid rgba(0, 229, 255, 0.4); border-radius: 16px; box-shadow: 0 0 30px rgba(0,85,255,0.4); display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid rgba(0,229,255,0.2); cursor: grab; }
         .header-left { display: flex; align-items: center; gap: 12px; }
         .logo-circle { width: 32px; height: 32px; background: var(--neon-blue); color: #000; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 16px; box-shadow: 0 0 15px var(--neon-blue); }
@@ -38,14 +38,13 @@
         
         .cyber-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.15); border-radius: 8px; padding: 12px; position: relative; }
         .cyber-box label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 8px; }
+        .cyber-box input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,229,255,0.3); color: #fff; padding: 6px; border-radius: 4px; font-family: 'Inter'; outline: none; }
         .custom-select { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; cursor: pointer; }
         .dropdown-options { position: absolute; top: 100%; left: 0; right: 0; background: #060d1e; border: 1px solid var(--neon-blue); border-radius: 8px; z-index: 99; max-height: 120px; overflow-y: auto; }
         .option-item { padding: 10px 12px; font-size: 12px; cursor: pointer; }
         .option-item:hover { background: rgba(0,229,255,0.15); color: var(--neon-blue); }
         
-        .scan-action-area { position: relative; display: flex; justify-content: center; align-items: center; padding: 25px 0; }
-        .radar-bg-static { position: absolute; width: 140px; height: 140px; border-radius: 50%; border: 1px dashed rgba(0,229,255,0.3); display: flex; justify-content: center; align-items: center; }
-        .radar-bg-static::before { content: ''; width: 90px; height: 90px; border-radius: 50%; border: 1px solid rgba(0,85,255,0.5); }
+        .scan-action-area { position: relative; display: flex; justify-content: center; align-items: center; padding: 20px 0; }
         .btn-start-scan { position: relative; z-index: 2; width: 85%; background: linear-gradient(90deg, #0055ff, #00e5ff); color: #fff; border: 1px solid var(--neon-blue); padding: 14px; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px rgba(0,229,255,0.5); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
         .btn-start-scan.scanning { background: rgba(0,85,255,0.3); pointer-events: none; border: 1px dashed var(--neon-blue); }
         
@@ -53,30 +52,38 @@
         .mode-btn { flex: 1; display: flex; justify-content: center; gap: 6px; background: none; border: none; color: var(--text-muted); padding: 10px 0; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; }
         .mode-btn.active { background: linear-gradient(90deg, rgba(0,85,255,0.5), rgba(0,229,255,0.5)); color: #fff; border: 1px solid var(--neon-blue); }
         
-        /* Limit Inputs */
         .limit-inputs { display: flex; gap: 10px; margin-top: 10px; }
         .limit-box { flex: 1; background: rgba(0,0,0,0.3); border: 1px dashed rgba(0,229,255,0.3); border-radius: 6px; padding: 8px; text-align: center; }
         .limit-box label { font-size: 9px; color: var(--neon-blue); margin-bottom: 4px; display: block; }
         .limit-box input { width: 100%; background: transparent; border: none; color: #fff; text-align: center; font-size: 14px; font-weight: bold; outline: none; }
-        .limit-box input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        .status-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.3); border-radius: 8px; padding: 16px; display: flex; align-items: center; gap: 15px; position: relative; }
-        .status-ring { width: 36px; height: 36px; border: 2px dashed var(--neon-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
-        .status-ring::after { content: ''; width: 16px; height: 16px; background: var(--neon-blue); border-radius: 50%; box-shadow: 0 0 10px var(--neon-blue); }
-        .status-text h3 { font-size: 14px; font-weight: 700; margin: 0 0 4px 0; color: #fff; }
-        .status-text p { font-size: 11px; color: var(--text-muted); margin: 0; }
+        .status-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,229,255,0.3); border-radius: 8px; padding: 14px; display: flex; align-items: center; gap: 15px; position: relative; }
+        .status-ring { width: 30px; height: 30px; border: 2px dashed var(--neon-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .status-ring::after { content: ''; width: 12px; height: 12px; background: var(--neon-blue); border-radius: 50%; }
+        .status-text h3 { font-size: 13px; font-weight: 700; margin: 0 0 2px 0; color: #fff; }
+        .status-text p { font-size: 10px; color: var(--text-muted); margin: 0; }
         
-        .panel-footer { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
+        .panel-footer { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); }
         .footer-logo { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--neon-blue); font-weight: 600; }
-        .mini-dot { width: 10px; height: 10px; background: var(--neon-blue); border-radius: 50%; }
+        .mini-dot { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; }
 
-        /* Full Screen Scanner */
+        /* Minimized Floating Launcher Widget */
+        .nova-minimized { position: absolute; bottom: 30px; right: 30px; background: rgba(8, 15, 35, 0.95); border: 1px solid var(--neon-blue); border-radius: 30px; padding: 8px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 0 20px rgba(0,229,255,0.4); }
+        .nova-minimized span { font-size: 12px; font-weight: bold; color: var(--neon-blue); }
+
+        /* Win Popup Notification */
+        #nova-win-popup { position: fixed; top: 15%; left: 50%; transform: translateX(-50%) scale(0.8); background: linear-gradient(135deg, rgba(0,255,136,0.95), rgba(0,150,100,0.95)); border: 2px solid #fff; padding: 15px 35px; border-radius: 50px; text-align: center; box-shadow: 0 0 40px #00ff88; z-index: 1000005; animation: popWin 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        #nova-win-popup h2 { font-size: 18px; color: #000; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        #nova-win-popup p { font-size: 11px; color: #052b14; font-weight: bold; margin: 2px 0 0 0; }
+        @keyframes popWin { 0% { transform: translateX(-50%) scale(0.5); opacity: 0; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+
+        /* Scanner Overlay */
         #nova-scanner-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; z-index: 1000001; pointer-events: auto; }
         .scan-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2,6,18,0.85); backdrop-filter: blur(5px); }
-        .full-radar-container { position: relative; width: 400px; height: 400px; display: flex; justify-content: center; align-items: center; }
-        .radar-circle-1 { position: absolute; width: 300px; height: 300px; border-radius: 50%; border: 1px solid rgba(0,229,255,0.2); animation: pulseRadar 2s infinite; }
+        .full-radar-container { position: relative; width: 350px; height: 350px; display: flex; justify-content: center; align-items: center; }
+        .radar-circle-1 { position: absolute; width: 250px; height: 250px; border-radius: 50%; border: 1px solid rgba(0,229,255,0.2); animation: pulseRadar 2s infinite; }
         .radar-beam { position: absolute; width: 50%; height: 2px; background: linear-gradient(90deg, transparent, #fff, var(--neon-blue)); top: 50%; right: 50%; transform-origin: right center; animation: radarBeamSpin 2s linear infinite; box-shadow: 0 0 20px var(--neon-blue); }
-        .scan-msg { position: absolute; bottom: 20%; font-size: 18px; font-weight: 700; color: var(--neon-blue); letter-spacing: 3px; z-index: 2; text-shadow: 0 0 10px var(--neon-blue); }
+        .scan-msg { position: absolute; bottom: 25%; font-size: 15px; font-weight: 700; color: var(--neon-blue); letter-spacing: 2px; z-index: 2; text-shadow: 0 0 10px var(--neon-blue); }
         @keyframes pulseRadar { 0% { transform: scale(0.8); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1.2); opacity: 0; } }
         @keyframes radarBeamSpin { 100% { transform: rotate(360deg); } }
         .hidden { display: none !important; }
@@ -88,16 +95,20 @@
     container.innerHTML = `
         <div id="nova-scanner-overlay" class="hidden">
             <div class="scan-backdrop"></div>
-            <div class="full-radar-container">
-                <div class="radar-circle-1"></div>
-                <div class="radar-beam"></div>
-            </div>
+            <div class="full-radar-container"><div class="radar-circle-1"></div><div class="radar-beam"></div></div>
             <div class="scan-msg">SCANNING MARKET DATA...</div>
         </div>
+
+        <div id="win-popup-container"></div>
 
         <div class="nova-robot-container" id="nova-robot-avatar">
             <div class="robot-circle"><div class="robot-face"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div></div>
             <button class="close-robot">×</button>
+        </div>
+
+        <div class="nova-minimized hidden" id="nova-minimized-launcher">
+            <div class="mini-dot"></div>
+            <span>NOVA AI (Active)</span>
         </div>
 
         <div class="nova-panel" id="nova-main-panel">
@@ -107,7 +118,6 @@
             </div>
             <div class="panel-tabs">
                 <button class="tab-btn active" data-tab="tab-scan">◎ Scan</button>
-                <button class="tab-btn" data-tab="tab-history">◷ History</button>
                 <button class="tab-btn" data-tab="tab-settings">⚙ Settings</button>
             </div>
             <div class="panel-content">
@@ -120,39 +130,20 @@
                             <div class="option-item" data-value="GBP/USD">GBP/USD</div>
                         </div>
                     </div>
-                    <div class="cyber-box">
-                        <label>⏱ Timeframe</label>
-                        <div class="custom-select" id="tf-select-btn"><span id="current-timeframe">1 minute</span> <span>▼</span></div>
-                        <div class="dropdown-options hidden" id="tf-options">
-                            <div class="option-item" data-value="15 seconds">15 seconds</div>
-                            <div class="option-item" data-value="1 minute">1 minute</div>
-                        </div>
-                    </div>
-                    
                     <div class="scan-action-area">
-                        <div class="radar-bg-static"></div>
                         <button class="btn-start-scan" id="btn-start-scan">◎ START SCAN ≫</button>
                     </div>
-
                     <div>
                         <label style="font-size:11px; color:#8496ae; margin-bottom:5px; display:block;">Scan Mode</label>
                         <div class="mode-toggle">
                             <button class="mode-btn active" id="mode-manual">↺ Manual</button>
                             <button class="mode-btn" id="mode-auto">↻ Auto Repeat</button>
                         </div>
-                        
                         <div id="auto-limits" class="limit-inputs hidden">
-                            <div class="limit-box">
-                                <label>MAX SCANS (0=∞)</label>
-                                <input type="number" id="limit-scans" value="0" min="0">
-                            </div>
-                            <div class="limit-box">
-                                <label>MAX TRADES (0=∞)</label>
-                                <input type="number" id="limit- trades" value="0" min="0">
-                            </div>
+                            <div class="limit-box"><label>MAX SCANS</label><input type="number" id="limit-scans" value="0" min="0"></div>
+                            <div class="limit-box"><label>MAX TRADES</label><input type="number" id="limit-trades" value="0" min="0"></div>
                         </div>
                     </div>
-
                     <div class="status-box" id="ui-status-box">
                         <div class="status-ring" id="status-ring-color"></div>
                         <div class="status-text">
@@ -161,8 +152,16 @@
                         </div>
                     </div>
                 </div>
-                <div id="tab-history" class="tab-pane hidden"><p style="font-size:12px; color:#8496ae; text-align:center;">No history.</p></div>
-                <div id="tab-settings" class="tab-pane hidden"><p style="font-size:12px; color:#8496ae; text-align:center;">Settings coming soon.</p></div>
+                <div id="tab-settings" class="tab-pane hidden">
+                    <div class="cyber-box" style="margin-bottom:10px;">
+                        <label>Base Trade Amount ($)</label>
+                        <input type="number" id="base-amount" value="1" min="1">
+                    </div>
+                    <div class="cyber-box">
+                        <label>Smart Martingale Multiplier</label>
+                        <input type="number" id="martingale-multiplier" value="2" min="1" step="0.5">
+                    </div>
+                </div>
             </div>
             <div class="panel-footer"><div class="footer-logo"><div class="mini-dot"></div> NOVA AI • Trade Smarter</div></div>
         </div>
@@ -171,8 +170,10 @@
 
     const panel = document.getElementById('nova-main-panel');
     const robot = document.getElementById('nova-robot-avatar');
+    const launcher = document.getElementById('nova-minimized-launcher');
     const handle = document.getElementById('nova-panel-handle');
     const scannerOverlay = document.getElementById('nova-scanner-overlay');
+    const winContainer = document.getElementById('win-popup-container');
     
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -183,16 +184,21 @@
         });
     });
 
-    document.querySelector('.btn-close-panel').addEventListener('click', () => panel.classList.add('hidden'));
+    document.querySelector('.btn-close-panel').addEventListener('click', () => {
+        panel.classList.add('hidden');
+        launcher.classList.remove('hidden');
+    });
+    
+    launcher.addEventListener('click', () => {
+        launcher.classList.add('hidden');
+        panel.classList.remove('hidden');
+    });
+
     document.querySelector('.close-robot').addEventListener('click', (e) => { e.stopPropagation(); robot.classList.add('hidden'); });
 
     setupDropdown('market-select-btn', 'market-options', 'current-market');
-    setupDropdown('tf-select-btn', 'tf-options', 'current-timeframe');
-
     function setupDropdown(bId, oId, dId) {
-        const btn = document.getElementById(bId);
-        const opts = document.getElementById(oId);
-        const disp = document.getElementById(dId);
+        const btn = document.getElementById(bId), opts = document.getElementById(oId), disp = document.getElementById(dId);
         btn.addEventListener('click', (e) => { e.stopPropagation(); opts.classList.toggle('hidden'); });
         opts.querySelectorAll('.option-item').forEach(item => {
             item.addEventListener('click', (e) => { e.stopPropagation(); disp.innerText = item.getAttribute('data-value'); opts.classList.add('hidden'); });
@@ -201,6 +207,8 @@
     }
 
     let isAuto = false, autoTimer = null, scansDone = 0, tradesDone = 0;
+    let recoveryMode = false, currentAmount = 1;
+
     const limitUI = document.getElementById('auto-limits');
     const manualBtn = document.getElementById('mode-manual');
     const autoBtn = document.getElementById('mode-auto');
@@ -220,56 +228,100 @@
         autoBtn.classList.add('active');
         manualBtn.classList.remove('active');
         limitUI.classList.remove('hidden');
-        isAuto = true;
-        scansDone = 0;
-        tradesDone = 0;
+        isAuto = true; scansDone = 0; tradesDone = 0;
+        currentAmount = parseFloat(document.getElementById('base-amount').value) || 1;
+        recoveryMode = false;
+        
         clearInterval(autoTimer);
         autoTimer = setInterval(() => { if (isAuto) executeScan(); }, 15000);
     }
 
-    document.getElementById('btn-start-scan').addEventListener('click', executeScan);
+    document.getElementById('btn-start-scan').addEventListener('click', () => {
+        // স্টার্ট স্ক্যানে চাপ দেওয়ার সাথে সাথেই প্যানেল মিনিমাইজ হয়ে ছোট উইজেট হয়ে যাবে
+        panel.classList.add('hidden');
+        launcher.classList.remove('hidden');
+        executeScan();
+    });
+
+    function showWinPopup() {
+        winContainer.innerHTML = `
+            <div id="nova-win-popup">
+                <h2>🎉 CONGRATULATIONS! 🎉</h2>
+                <p>TRADE WON SUCCESSFULLY!</p>
+            </div>
+        `;
+        setTimeout(() => {
+            winContainer.innerHTML = '';
+        }, 3500); // ৩.৫ সেকেন্ড পর পপআপটি নিজে থেকে মিলিয়ে যাবে
+    }
+
+    function setPlatformAmount(amount) {
+        const inputField = document.querySelector('input[type="number"]') || document.querySelector('.investment-field input');
+        if (inputField) {
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+            nativeInputValueSetter.call(inputField, amount);
+            inputField.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }
 
     function executeScan() {
-        document.getElementById('btn-start-scan').innerText = 'SCANNING...';
         scannerOverlay.classList.remove('hidden');
 
         setTimeout(() => {
             scannerOverlay.classList.add('hidden');
-            document.getElementById('btn-start-scan').innerText = '◎ START SCAN ≫';
             
-            const hasChart = document.querySelector('canvas') || document.querySelector('.chart-container') || true;
-            if (!hasChart) return;
-
             const signals = ['UP', 'DOWN'];
             const chosenSignal = signals[Math.floor(Math.random() * signals.length)];
+            const score = Math.floor(Math.random() * 20) + 75;
             const color = chosenSignal === 'UP' ? '#00ff88' : '#ff4d4d';
+
+            if (recoveryMode && score < 86) {
+                document.getElementById('ui-status-title').innerText = 'WAITING...';
+                document.getElementById('ui-status-title').style.color = '#ffcc00';
+                document.getElementById('ui-status-desc').innerText = `Recovery Active. Score (${score}) low. Waiting...`;
+                return; 
+            }
             
             document.getElementById('ui-status-title').innerText = `Market Found: ${chosenSignal}`;
             document.getElementById('ui-status-title').style.color = color;
             document.getElementById('status-ring-color').style.borderColor = color;
             
             let targetScans = parseInt(document.getElementById('limit-scans').value) || 0;
-            let targetTrades = parseInt(document.getElementById('limit- trades').value) || 0;
+            let targetTrades = parseInt(document.getElementById('limit-trades').value) || 0;
 
             if (isAuto) scansDone++;
 
             if (isAuto) {
                 const btn = chosenSignal === 'UP' 
-                    ? (document.querySelector('.button--success') || document.querySelector('.btn-call') || document.querySelector('[class*="call"]')) 
-                    : (document.querySelector('.button--danger') || document.querySelector('.btn-put') || document.querySelector('[class*="put"]'));
+                    ? (document.querySelector('.button--success') || document.querySelector('.btn-call')) 
+                    : (document.querySelector('.button--danger') || document.querySelector('.btn-put'));
                 
                 if (btn) {
+                    setPlatformAmount(currentAmount);
                     ['mousedown','mouseup','click'].forEach(ev => btn.dispatchEvent(new MouseEvent(ev, {bubbles:true, cancelable:true, view:window})));
                     tradesDone++;
+                    
+                    // ট্রেড উইন সিমুলেশন ও পপআপ ট্রিগার
+                    setTimeout(() => {
+                        const tradeWon = Math.random() > 0.4; // জয়ের সম্ভাবনা বেশি দেখানো হলো
+                        if (tradeWon) {
+                            recoveryMode = false;
+                            currentAmount = parseFloat(document.getElementById('base-amount').value) || 1;
+                            showWinPopup(); // উইন হলে সুন্দর পপআপ দেখাবে!
+                        } else {
+                            recoveryMode = true;
+                            const multi = parseFloat(document.getElementById('martingale-multiplier').value) || 2;
+                            currentAmount = currentAmount * multi;
+                        }
+                    }, 5000); 
                 }
                 
-                document.getElementById('ui-status-desc').innerHTML = `Target: <strong>${chosenSignal}</strong> <br> (Scans: ${scansDone} | Trades: ${tradesDone})`;
+                document.getElementById('ui-status-desc').innerHTML = `Amount: <strong>$${currentAmount}</strong> | Target: <strong>${chosenSignal}</strong> <br> (Scans: ${scansDone} | Trades: ${tradesDone})`;
 
                 if ((targetScans > 0 && scansDone >= targetScans) || (targetTrades > 0 && tradesDone >= targetTrades)) {
                     stopAutoScan();
                     document.getElementById('ui-status-title').innerText = 'AUTO STOPPED';
                     document.getElementById('ui-status-title').style.color = '#ffcc00';
-                    document.getElementById('ui-status-desc').innerText = 'Target limit reached successfully.';
                 }
             } else {
                 document.getElementById('ui-status-desc').innerHTML = `Target direction: <strong>${chosenSignal}</strong>`;
