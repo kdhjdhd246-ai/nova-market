@@ -138,13 +138,12 @@ class NovaUIController {
             });
         }
 
-        // Close dropdowns on outside click
         document.addEventListener('click', () => {
             if (this.marketOptions) this.marketOptions.classList.add('hidden');
             if (this.tfOptions) this.tfOptions.classList.add('hidden');
         });
 
-        // Scan Modes (Manual vs Auto Repeat)
+        // Scan Modes
         if (this.modeManualBtn && this.modeAutoBtn) {
             this.modeManualBtn.addEventListener('click', () => {
                 this.modeManualBtn.classList.add('active');
@@ -232,41 +231,38 @@ class NovaUIController {
         this.startScanBtn.classList.add('scanning');
         this.startScanBtn.querySelector('span').innerText = 'SCANNING...';
         this.statusRing.className = 'status-ring scanning';
-        this.statusTitle.innerText = 'Analyzing Market...';
+        this.statusTitle.innerText = 'Scanning Market...';
         this.statusTitle.style.color = 'var(--text-main)';
-        this.statusDesc.innerHTML = 'Extracting live indicators...';
+        this.statusDesc.innerHTML = 'Searching for active price action...';
 
         this.scanner.startScan(() => {
             this.startScanBtn.classList.remove('scanning');
             this.startScanBtn.querySelector('span').innerText = 'START SCAN';
             
             if (!this.adapter || !this.indicator) {
-                this.updateUIWithResult({ signal: 'ERROR', score: 0, reason: 'System engines failed to load.', isDemo: false });
+                this.updateUIWithResult({ signal: 'WAIT', score: 0, reason: 'Market Not Found: System engines failed to load.', isDemo: false });
                 return;
             }
 
             const marketData = this.adapter.fetchData();
-
-            // Fallback generation even if direct canvas scrape fails, so user gets up/down signals instantly
             let candles = marketData.candles;
+
+            // যদি প্ল্যাটফর্ম থেকে কোনো ক্যান্ডেল বা মার্কেট ডেটা না পাওয়া যায়
             if (!candles || candles.length === 0) {
-                // Generate secure random fallback candles for uninterrupted trading analysis
-                candles = [];
-                let basePrice = 1.1200;
-                for(let i=0; i<30; i++) {
-                    let change = (Math.random() - 0.48) * 0.0010;
-                    let open = basePrice;
-                    let close = open + change;
-                    candles.push({ open: open, high: Math.max(open, close)+0.0003, low: Math.min(open, close)-0.0003, close: close });
-                    basePrice = close;
-                }
+                this.updateUIWithResult({
+                    signal: 'WAIT',
+                    score: 0,
+                    reason: 'Market Not Found: Active market candles could not be detected on the page.',
+                    isDemo: false
+                });
+                return;
             }
 
+            // মার্কেট খুঁজে পেলে এনালাইসিস করে আপ বা ডাউন সিগন্যাল জেনারেট করবে
             const analysisResult = this.indicator.analyze(candles, false);
             
-            // Get user selected market & timeframe safely
             const selectedMarket = this.currentMarketEl.innerText.trim();
-            const selectedTf = this.currentTimeframeEl.querySelector('span') ? this.currentTimeframeEl.querySelector('span').innerText.trim() : "1 minute";
+            const selectedTf = this.currentTimeframeEl.querySelector('span') ? this.currentTimeframeEl.querySelector('span'].innerText.trim() : "1 minute";
 
             analysisResult.symbol = (marketData.symbol && marketData.symbol !== 'UNKNOWN') ? marketData.symbol : (selectedMarket || "EUR/USD");
             analysisResult.timeframe = selectedTf;
@@ -291,7 +287,6 @@ class NovaUIController {
         this.statusBox.className = `status-box signal-${displaySignal.replace(/\s+/g, '')}`;
         this.statusRing.className = 'status-ring'; 
 
-        // DEMO label permanently excluded
         this.statusTitle.innerHTML = `${displaySignal}`;
 
         let detailsHtml = `${result.reason}`;
