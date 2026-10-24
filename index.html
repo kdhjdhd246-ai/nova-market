@@ -7,13 +7,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background simulation for local testing -->
-    <div class="quotex-bg-simulator"></div>
+    <!-- DEMO CHART SIMULATOR (Background) -->
+    <div id="nova-chart-container">
+        <div class="demo-watermark">DEMO CHART - NOT LIVE DATA</div>
+        
+        <!-- Main Candlestick Chart -->
+        <div class="chart-section main-chart">
+            <canvas id="main-chart-canvas"></canvas>
+            <div class="price-pill-container" id="current-price-pill">
+                <div class="price-line"></div>
+                <div class="price-pill">1.12278</div>
+            </div>
+            <div class="vertical-timing-line">
+                <span>Beginning of trade</span>
+            </div>
+        </div>
+
+        <!-- RSI 14 Panel -->
+        <div class="chart-section rsi-chart">
+            <div class="rsi-header">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 12l6-6 4 4 6-6"/></svg>
+                RSI 14
+            </div>
+            <canvas id="rsi-chart-canvas"></canvas>
+            <div class="rsi-level level-70">70</div>
+            <div class="rsi-level level-30">30</div>
+        </div>
+    </div>
 
     <!-- MAIN NOVA AI OVERLAY -->
     <div id="nova-ai-overlay">
-
-        <!-- Scanning Animation Overlay (Hidden by default) -->
+        <!-- Scanning Animation Overlay -->
         <div id="nova-scanner-overlay" class="hidden">
             <div class="scan-backdrop"></div>
             <div class="radar-container">
@@ -154,6 +178,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="demo-chart.js"></script> <!-- NEW FILE -->
     <script src="scanner-engine.js"></script>
     <script src="app.js"></script>
 </body>
