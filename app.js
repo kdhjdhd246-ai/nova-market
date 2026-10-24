@@ -22,7 +22,9 @@ class NovaUIController {
         this.statusDesc = document.getElementById('ui-status-desc');
 
         // Initialize Scanner Engine
-        this.scanner = new NovaScannerEngine();
+        if (typeof NovaScannerEngine !== 'undefined') {
+            this.scanner = new NovaScannerEngine();
+        }
 
         this.init();
     }
@@ -38,35 +40,30 @@ class NovaUIController {
     }
 
     bindEvents() {
-        // Minimize Panel
         this.closePanelBtn.addEventListener('click', () => {
             this.mainPanel.classList.add('hidden');
             this.minimizedLauncher.classList.remove('hidden');
             localStorage.setItem('nova_panel_state', 'minimized');
         });
 
-        // Close Robot
         this.closeRobotBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.robotAvatar.classList.add('hidden');
             localStorage.setItem('nova_robot_state', 'closed');
         });
 
-        // Restore Panel
         this.minimizedLauncher.addEventListener('click', () => {
             this.minimizedLauncher.classList.add('hidden');
             this.mainPanel.classList.remove('hidden');
             localStorage.setItem('nova_panel_state', 'open');
         });
 
-        // Resize Boundaries
         window.addEventListener('resize', () => {
             this.enforceBoundaries(this.robotAvatar);
             this.enforceBoundaries(this.mainPanel);
         });
 
-        // START SCAN EVENT
-        if (this.startScanBtn) {
+        if (this.startScanBtn && this.scanner) {
             this.startScanBtn.addEventListener('click', () => this.handleScanTrigger());
         }
     }
@@ -74,21 +71,17 @@ class NovaUIController {
     handleScanTrigger() {
         if (this.scanner.isScanning) return;
 
-        // 1. Update UI for scanning state
         this.startScanBtn.classList.add('scanning');
         this.startScanBtn.querySelector('span').innerText = 'SCANNING...';
         this.statusRing.classList.add('scanning');
         this.statusTitle.innerText = 'Analyzing Market...';
         this.statusDesc.innerText = 'Extracting real-time parameters';
 
-        // 2. Start Visual Animation (from scanner-engine.js)
         this.scanner.startScan(() => {
-            // 3. Callback when visual scan completes
             this.startScanBtn.classList.remove('scanning');
             this.startScanBtn.querySelector('span').innerText = 'START SCAN';
             this.statusRing.classList.remove('scanning');
             
-            // Temporary Fake Result (Will be replaced in Step 5 by Indicator Engine)
             this.statusTitle.innerText = 'Analysis Complete';
             this.statusDesc.innerText = 'Waiting for data validation rules (Step 5)';
         });
