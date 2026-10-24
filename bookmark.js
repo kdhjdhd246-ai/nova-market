@@ -1,10 +1,44 @@
 /**
- * NOVA MARKET AI - Cyber Theme with Win Notification, Auto-Minimize & Smart Martingale
+ * NOVA MARKET AI - Cyber Theme with Auto-Minimize, Auto-Expand, Sound Effects & Smart Martingale
  */
 (function() {
     if (document.getElementById('nova-ai-overlay')) {
         alert('NOVA MARKET AI is already active!');
         return;
+    }
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playSound(type) {
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'signal') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, now);
+            osc.frequency.setValueAtTime(880, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } else if (type === 'win') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.15);
+            osc.frequency.setValueAtTime(783.99, now + 0.3);
+            osc.frequency.setValueAtTime(1046.50, now + 0.45);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+            osc.start(now);
+            osc.stop(now + 0.7);
+        }
     }
 
     const style = document.createElement('style');
@@ -67,17 +101,14 @@
         .footer-logo { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--neon-blue); font-weight: 600; }
         .mini-dot { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; }
 
-        /* Minimized Floating Launcher Widget */
         .nova-minimized { position: absolute; bottom: 30px; right: 30px; background: rgba(8, 15, 35, 0.95); border: 1px solid var(--neon-blue); border-radius: 30px; padding: 8px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 0 20px rgba(0,229,255,0.4); }
         .nova-minimized span { font-size: 12px; font-weight: bold; color: var(--neon-blue); }
 
-        /* Win Popup Notification */
         #nova-win-popup { position: fixed; top: 15%; left: 50%; transform: translateX(-50%) scale(0.8); background: linear-gradient(135deg, rgba(0,255,136,0.95), rgba(0,150,100,0.95)); border: 2px solid #fff; padding: 15px 35px; border-radius: 50px; text-align: center; box-shadow: 0 0 40px #00ff88; z-index: 1000005; animation: popWin 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         #nova-win-popup h2 { font-size: 18px; color: #000; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         #nova-win-popup p { font-size: 11px; color: #052b14; font-weight: bold; margin: 2px 0 0 0; }
         @keyframes popWin { 0% { transform: translateX(-50%) scale(0.5); opacity: 0; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
 
-        /* Scanner Overlay */
         #nova-scanner-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; z-index: 1000001; pointer-events: auto; }
         .scan-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2,6,18,0.85); backdrop-filter: blur(5px); }
         .full-radar-container { position: relative; width: 350px; height: 350px; display: flex; justify-content: center; align-items: center; }
@@ -237,13 +268,14 @@
     }
 
     document.getElementById('btn-start-scan').addEventListener('click', () => {
-        // স্টার্ট স্ক্যানে চাপ দেওয়ার সাথে সাথেই প্যানেল মিনিমাইজ হয়ে ছোট উইজেট হয়ে যাবে
+        // ১. স্টার্ট বাটনে চাপ দিলেই প্যানেল মিনিমাইজ হয়ে যাবে
         panel.classList.add('hidden');
         launcher.classList.remove('hidden');
         executeScan();
     });
 
     function showWinPopup() {
+        playSound('win');
         winContainer.innerHTML = `
             <div id="nova-win-popup">
                 <h2>🎉 CONGRATULATIONS! 🎉</h2>
@@ -252,7 +284,7 @@
         `;
         setTimeout(() => {
             winContainer.innerHTML = '';
-        }, 3500); // ৩.৫ সেকেন্ড পর পপআপটি নিজে থেকে মিলিয়ে যাবে
+        }, 3500);
     }
 
     function setPlatformAmount(amount) {
@@ -279,9 +311,15 @@
                 document.getElementById('ui-status-title').innerText = 'WAITING...';
                 document.getElementById('ui-status-title').style.color = '#ffcc00';
                 document.getElementById('ui-status-desc').innerText = `Recovery Active. Score (${score}) low. Waiting...`;
+                
+                // স্ক্যান ও সিগন্যাল প্রসেস শেষ হওয়ায় প্যানেল আবার অটো বড় হয়ে যাবে
+                launcher.classList.add('hidden');
+                panel.classList.remove('hidden');
                 return; 
             }
             
+            playSound('signal');
+
             document.getElementById('ui-status-title').innerText = `Market Found: ${chosenSignal}`;
             document.getElementById('ui-status-title').style.color = color;
             document.getElementById('status-ring-color').style.borderColor = color;
@@ -301,13 +339,12 @@
                     ['mousedown','mouseup','click'].forEach(ev => btn.dispatchEvent(new MouseEvent(ev, {bubbles:true, cancelable:true, view:window})));
                     tradesDone++;
                     
-                    // ট্রেড উইন সিমুলেশন ও পপআপ ট্রিগার
                     setTimeout(() => {
-                        const tradeWon = Math.random() > 0.4; // জয়ের সম্ভাবনা বেশি দেখানো হলো
+                        const tradeWon = Math.random() > 0.4;
                         if (tradeWon) {
                             recoveryMode = false;
                             currentAmount = parseFloat(document.getElementById('base-amount').value) || 1;
-                            showWinPopup(); // উইন হলে সুন্দর পপআপ দেখাবে!
+                            showWinPopup();
                         } else {
                             recoveryMode = true;
                             const multi = parseFloat(document.getElementById('martingale-multiplier').value) || 2;
@@ -326,6 +363,11 @@
             } else {
                 document.getElementById('ui-status-desc').innerHTML = `Target direction: <strong>${chosenSignal}</strong>`;
             }
+
+            // ২. স্ক্যান ও ট্রেড প্লেস করার কাজ শেষ হওয়া মাত্রই বট নিজে থেকে আগের মতো বড় হয়ে যাবে
+            launcher.classList.add('hidden');
+            panel.classList.remove('hidden');
+
         }, 3000);
     }
 
