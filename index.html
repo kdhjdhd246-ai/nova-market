@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA MARKET AI - UI Testing</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for futuristic, clean typography matching the screenshot -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Simulated Chart Background for testing the overlay -->
+    <div id="nova-host-environment">
+        
+        <!-- NOVA AI MAIN PANEL -->
+        <div id="nova-panel" class="nova-panel">
+            <!-- Header -->
+            <div class="nova-header">
+                <div class="nova-logo">N</div>
+                <div class="nova-title-box">
+                    <h1 class="nova-title">NOVA MARKET AI</h1>
+                    <span class="nova-subtitle">Smart Market Scanner</span>
+                </div>
+                <button class="nova-close-btn" aria-label="Close panel">&times;</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="nova-tabs">
+                <button class="nova-tab active" data-target="tab-scan">Scan</button>
+                <button class="nova-tab" data-target="tab-history">History</button>
+                <button class="nova-tab" data-target="tab-settings">Settings</button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="nova-content">
+                
+                <!-- Scan Tab (Active by default) -->
+                <div id="tab-scan" class="nova-tab-content active">
+                    
+                    <div class="nova-form-group">
+                        <label><span class="nova-dot cyan"></span> Market</label>
+                        <div class="nova-select-wrapper">
+                            <div class="nova-icon-prefix">🇺🇸</div>
+                            <select class="nova-select">
+                                <option value="EURUSD">EUR/USD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="nova-form-group">
+                        <label><span class="nova-dot green"></span> Timeframe</label>
+                        <div class="nova-select-wrapper">
+                            <div class="nova-icon-prefix">⏱</div>
+                            <select class="nova-select">
+                                <option value="1m">1 minute</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="nova-start-btn" class="nova-start-btn">
+                        <span class="nova-bolt">⚡</span> START SCAN
+                    </button>
+
+                    <div class="nova-form-group">
+                        <label><span class="nova-dot green"></span> Scan Mode</label>
+                        <div class="nova-mode-toggle">
+                            <button class="nova-mode-btn active" data-mode="manual">
+                                <span class="nova-mode-icon">⊖</span> Manual
+                            </button>
+                            <button class="nova-mode-btn" data-mode="auto">
+                                <span class="nova-mode-icon">↻</span> Auto Repeat
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="nova-status-box">
+                        <div class="nova-status-ring"></div>
+                        <div class="nova-status-text">
+                            <strong id="nova-status-title">Ready to scan</strong>
+                            <span id="nova-status-desc">Click START SCAN to begin analysis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Tab (Hidden by default) -->
+                <div id="tab-history" class="nova-tab-content">
+                    <div class="nova-placeholder-text">History will appear here after scanning.</div>
+                </div>
+
+                <!-- Settings Tab (Hidden by default) -->
+                <div id="tab-settings" class="nova-tab-content">
+                    <div class="nova-placeholder-text">Configuration options load here.</div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="nova-footer">
+                <div class="nova-footer-left">
+                    <span class="nova-footer-logo">N</span> NOVA AI • Trade Smarter
+                </div>
+                <div class="nova-footer-right">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
