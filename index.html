@@ -1,131 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOVA MARKET AI - Step 2</title>
+    <title>NOVA MARKET AI - Development UI</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="nova-host-environment">
+    <!-- Background simulation for local testing -->
+    <div class="quotex-bg-simulator"></div>
+
+    <!-- MAIN NOVA AI OVERLAY (This will be injected by bookmarklet later) -->
+    <div id="nova-ai-overlay">
         
-        <!-- MINIMIZED ROBOT LAUNCHER -->
-        <div id="nova-launcher" class="nova-launcher" style="display: none;" tabindex="0" aria-label="Restore NOVA AI Panel">
-            <div class="nova-launcher-avatar">
-                <div class="nova-avatar-glow"></div>
-                <div class="nova-avatar-logo">N</div>
-                <svg class="nova-robot-face" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2">
-                    <rect x="3" y="6" width="18" height="12" rx="4"></rect>
-                    <circle cx="8" cy="12" r="1" fill="#00e5ff"></circle>
-                    <circle cx="16" cy="12" r="1" fill="#00e5ff"></circle>
-                    <path d="M9 16h6"></path>
-                </svg>
+        <!-- Floating Robot Avatar -->
+        <div class="nova-robot-container" id="nova-robot-avatar">
+            <div class="drag-tooltip">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 5v14M5 12h14M12 5l-3 3M12 5l3 3M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3"/></svg>
+                Drag to move
             </div>
-            <div class="nova-launcher-text">
-                <strong>NOVA</strong>
-                <span>Tap to open</span>
+            <div class="robot-circle">
+                <div class="robot-face">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="mouth"></div>
+                </div>
+                <div class="badge-n">N</div>
             </div>
-            <div class="nova-launcher-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
-            </div>
+            <button class="close-robot">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
         </div>
 
-        <!-- NOVA AI MAIN PANEL -->
-        <div id="nova-panel" class="nova-panel">
-            <!-- Header (Drag Area) -->
-            <div class="nova-header">
-                <div class="nova-drag-area" tabindex="0" aria-label="Drag to move panel">
-                    <div class="nova-logo">N</div>
-                    <div class="nova-title-box">
-                        <h1 class="nova-title">NOVA MARKET AI</h1>
-                        <span class="nova-subtitle">Smart Market Scanner</span>
+        <!-- Glassmorphism Control Panel -->
+        <div class="nova-panel" id="nova-main-panel">
+            <!-- Header -->
+            <div class="panel-header">
+                <div class="header-left">
+                    <div class="logo-circle">N</div>
+                    <div class="header-titles">
+                        <h2>NOVA MARKET AI</h2>
+                        <p>Smart Market Scanner</p>
                     </div>
                 </div>
-                <div class="nova-controls">
-                    <button class="nova-minimize-btn" aria-label="Minimize panel">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
-                    </button>
-                    <button class="nova-close-btn" aria-label="Close panel">&times;</button>
-                </div>
+                <button class="btn-close-panel">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
             </div>
 
             <!-- Tabs -->
-            <div class="nova-tabs">
-                <button class="nova-tab active" data-target="tab-scan">Scan</button>
-                <button class="nova-tab" data-target="tab-history">History</button>
-                <button class="nova-tab" data-target="tab-settings">Settings</button>
+            <div class="panel-tabs">
+                <button class="tab-btn active">Scan</button>
+                <button class="tab-btn">History</button>
+                <button class="tab-btn">Settings</button>
             </div>
 
-            <!-- Content Area -->
-            <div class="nova-content">
-                <div id="tab-scan" class="nova-tab-content active">
-                    <div class="nova-form-group">
-                        <label><span class="nova-dot cyan"></span> Market</label>
-                        <div class="nova-select-wrapper">
-                            <div class="nova-icon-prefix">🇺🇸</div>
-                            <select class="nova-select">
-                                <option value="EURUSD">EUR/USD</option>
-                            </select>
+            <!-- Content Area (Scan Mode) -->
+            <div class="panel-content">
+                <!-- Market Selector -->
+                <div class="input-section">
+                    <label><span class="dot cyan"></span> Market</label>
+                    <div class="custom-select">
+                        <div class="select-value">
+                            <span class="flag-icon">🇺🇸/🇪🇺</span> EUR/USD
                         </div>
-                    </div>
-
-                    <div class="nova-form-group">
-                        <label><span class="nova-dot green"></span> Timeframe</label>
-                        <div class="nova-select-wrapper">
-                            <div class="nova-icon-prefix">⏱</div>
-                            <select class="nova-select">
-                                <option value="1m">1 minute</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button id="nova-start-btn" class="nova-start-btn">
-                        <span class="nova-bolt">⚡</span> START SCAN
-                    </button>
-
-                    <div class="nova-form-group">
-                        <label><span class="nova-dot green"></span> Scan Mode</label>
-                        <div class="nova-mode-toggle">
-                            <button class="nova-mode-btn active" data-mode="manual">
-                                <span class="nova-mode-icon">⊖</span> Manual
-                            </button>
-                            <button class="nova-mode-btn" data-mode="auto">
-                                <span class="nova-mode-icon">↻</span> Auto Repeat
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="nova-status-box">
-                        <div class="nova-status-ring"></div>
-                        <div class="nova-status-text">
-                            <strong id="nova-status-title">Ready to scan</strong>
-                            <span id="nova-status-desc">Click START SCAN to begin analysis</span>
-                        </div>
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 9l6 6 6-6"/></svg>
                     </div>
                 </div>
 
-                <div id="tab-history" class="nova-tab-content">
-                    <div class="nova-placeholder-text">History will appear here after scanning.</div>
+                <!-- Timeframe Selector -->
+                <div class="input-section">
+                    <label><span class="dot green"></span> Timeframe</label>
+                    <div class="custom-select">
+                        <div class="select-value">
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            1 minute
+                        </div>
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
                 </div>
 
-                <div id="tab-settings" class="nova-tab-content">
-                    <div class="nova-placeholder-text">Configuration options load here.</div>
+                <!-- START SCAN Button -->
+                <button class="btn-start-scan">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    START SCAN
+                </button>
+
+                <!-- Scan Mode Toggle -->
+                <div class="input-section mt-15">
+                    <label><span class="dot green"></span> Scan Mode</label>
+                    <div class="mode-toggle">
+                        <button class="mode-btn active">
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                            Manual
+                        </button>
+                        <button class="mode-btn">
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.63-6.37L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 1 0-2.63 6.37L3 16"/></svg>
+                            Auto Repeat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status Indicator Box -->
+                <div class="status-box">
+                    <div class="status-ring">
+                        <div class="ring-inner"></div>
+                    </div>
+                    <div class="status-text">
+                        <h3>Ready to scan</h3>
+                        <p>Click START SCAN to begin analysis</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Footer -->
-            <div class="nova-footer">
-                <div class="nova-footer-left">
-                    <span class="nova-footer-logo">N</span> NOVA AI • Trade Smarter
+            <div class="panel-footer">
+                <div class="footer-logo">
+                    <div class="mini-robot"></div>
+                    <span>NOVA AI • Trade Smarter</span>
                 </div>
-                <div class="nova-footer-right">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-                </div>
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 20V10M12 20V4M6 20v-4"/></svg>
             </div>
         </div>
-
+        
     </div>
-    <script src="app.js"></script>
 </body>
 </html>
