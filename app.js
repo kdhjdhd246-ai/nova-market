@@ -1,6 +1,6 @@
 /**
  * NOVA MARKET AI - UI Controller
- * Handles Draggable Elements, Minimize/Restore, and LocalStorage Preferences
+ * Handles Draggable Elements, Minimize/Restore, Settings, and Scanner wiring.
  */
 
 class NovaUIController {
@@ -14,21 +14,26 @@ class NovaUIController {
         this.panelHandle = document.getElementById('nova-panel-handle');
         this.closePanelBtn = document.querySelector('.btn-close-panel');
         this.closeRobotBtn = document.querySelector('.close-robot');
+        this.startScanBtn = document.getElementById('btn-start-scan');
         
+        // Status UI
+        this.statusRing = document.getElementById('ui-status-ring');
+        this.statusTitle = document.getElementById('ui-status-title');
+        this.statusDesc = document.getElementById('ui-status-desc');
+
+        // Initialize Scanner Engine
+        this.scanner = new NovaScannerEngine();
+
         this.init();
     }
 
     init() {
         if (!this.mainPanel || !this.robotAvatar) return;
 
-        // Make elements draggable
         this.makeDraggable(this.robotAvatar, this.robotAvatar, 'nova_robot_pos');
         this.makeDraggable(this.mainPanel, this.panelHandle, 'nova_panel_pos');
 
-        // Bind Events
         this.bindEvents();
-
-        // Restore State & Positions
         this.loadSavedState();
     }
 
@@ -42,22 +47,50 @@ class NovaUIController {
 
         // Close Robot
         this.closeRobotBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent drag triggering
+            e.stopPropagation();
             this.robotAvatar.classList.add('hidden');
             localStorage.setItem('nova_robot_state', 'closed');
         });
 
-        // Restore Panel from Minimized Launcher
+        // Restore Panel
         this.minimizedLauncher.addEventListener('click', () => {
             this.minimizedLauncher.classList.add('hidden');
             this.mainPanel.classList.remove('hidden');
             localStorage.setItem('nova_panel_state', 'open');
         });
 
-        // Prevent Window Resize from pushing elements off-screen
+        // Resize Boundaries
         window.addEventListener('resize', () => {
             this.enforceBoundaries(this.robotAvatar);
             this.enforceBoundaries(this.mainPanel);
+        });
+
+        // START SCAN EVENT
+        if (this.startScanBtn) {
+            this.startScanBtn.addEventListener('click', () => this.handleScanTrigger());
+        }
+    }
+
+    handleScanTrigger() {
+        if (this.scanner.isScanning) return;
+
+        // 1. Update UI for scanning state
+        this.startScanBtn.classList.add('scanning');
+        this.startScanBtn.querySelector('span').innerText = 'SCANNING...';
+        this.statusRing.classList.add('scanning');
+        this.statusTitle.innerText = 'Analyzing Market...';
+        this.statusDesc.innerText = 'Extracting real-time parameters';
+
+        // 2. Start Visual Animation (from scanner-engine.js)
+        this.scanner.startScan(() => {
+            // 3. Callback when visual scan completes
+            this.startScanBtn.classList.remove('scanning');
+            this.startScanBtn.querySelector('span').innerText = 'START SCAN';
+            this.statusRing.classList.remove('scanning');
+            
+            // Temporary Fake Result (Will be replaced in Step 5 by Indicator Engine)
+            this.statusTitle.innerText = 'Analysis Complete';
+            this.statusDesc.innerText = 'Waiting for data validation rules (Step 5)';
         });
     }
 
@@ -65,9 +98,8 @@ class NovaUIController {
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
         const dragMouseDown = (e) => {
-            // Ignore clicks on buttons/inputs inside the handle
-            if (['BUTTON', 'INPUT', 'SVG', 'PATH'].includes(e.target.tagName.toUpperCase())) {
-                if(!e.target.closest('.panel-header')) return; // Allow header drag
+            if (['BUTTON', 'INPUT', 'SVG', 'PATH', 'SPAN'].includes(e.target.tagName.toUpperCase())) {
+                if(!e.target.closest('.panel-header')) return; 
             }
             e.preventDefault();
             pos3 = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
@@ -92,7 +124,6 @@ class NovaUIController {
             let newTop = element.offsetTop - pos2;
             let newLeft = element.offsetLeft - pos1;
 
-            // Strict viewport boundaries
             const maxLeft = window.innerWidth - element.offsetWidth;
             const maxTop = window.innerHeight - element.offsetHeight;
 
@@ -101,7 +132,6 @@ class NovaUIController {
 
             element.style.top = newTop + "px";
             element.style.left = newLeft + "px";
-            // Remove bottom/right positioning if used, to rely purely on top/left
             element.style.right = 'auto';
             element.style.bottom = 'auto';
         };
@@ -112,7 +142,6 @@ class NovaUIController {
             document.removeEventListener('touchend', closeDragElement);
             document.removeEventListener('touchmove', elementDrag);
             
-            // Save position to localStorage
             localStorage.setItem(storageKey, JSON.stringify({
                 top: element.style.top,
                 left: element.style.left
@@ -125,57 +154,33 @@ class NovaUIController {
 
     enforceBoundaries(element) {
         if(element.classList.contains('hidden')) return;
-        
         const rect = element.getBoundingClientRect();
-        if (rect.right > window.innerWidth) {
-            element.style.left = (window.innerWidth - rect.width) + 'px';
-        }
-        if (rect.bottom > window.innerHeight) {
-            element.style.top = (window.innerHeight - rect.height) + 'px';
-        }
+        if (rect.right > window.innerWidth) element.style.left = (window.innerWidth - rect.width) + 'px';
+        if (rect.bottom > window.innerHeight) element.style.top = (window.innerHeight - rect.height) + 'px';
     }
 
     loadSavedState() {
         try {
-            // Load Panel Position
             const panelPos = JSON.parse(localStorage.getItem('nova_panel_pos'));
-            if (panelPos) {
-                this.mainPanel.style.top = panelPos.top;
-                this.mainPanel.style.left = panelPos.left;
-                this.mainPanel.style.right = 'auto';
-            }
+            if (panelPos) { this.mainPanel.style.top = panelPos.top; this.mainPanel.style.left = panelPos.left; this.mainPanel.style.right = 'auto'; }
 
-            // Load Robot Position
             const robotPos = JSON.parse(localStorage.getItem('nova_robot_pos'));
-            if (robotPos) {
-                this.robotAvatar.style.top = robotPos.top;
-                this.robotAvatar.style.left = robotPos.left;
-                this.robotAvatar.style.right = 'auto';
-            }
+            if (robotPos) { this.robotAvatar.style.top = robotPos.top; this.robotAvatar.style.left = robotPos.left; this.robotAvatar.style.right = 'auto'; }
 
-            // Load UI States (Open/Minimized/Closed)
-            const panelState = localStorage.getItem('nova_panel_state');
-            if (panelState === 'minimized') {
+            if (localStorage.getItem('nova_panel_state') === 'minimized') {
                 this.mainPanel.classList.add('hidden');
                 this.minimizedLauncher.classList.remove('hidden');
             }
-
-            const robotState = localStorage.getItem('nova_robot_state');
-            if (robotState === 'closed') {
+            if (localStorage.getItem('nova_robot_state') === 'closed') {
                 this.robotAvatar.classList.add('hidden');
             }
             
-            // Re-enforce boundaries just in case screen size changed
             this.enforceBoundaries(this.mainPanel);
             this.enforceBoundaries(this.robotAvatar);
-
-        } catch (e) {
-            console.error("Error loading NOVA AI saved state:", e);
-        }
+        } catch (e) { console.error("NOVA AI State Error:", e); }
     }
 }
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.novaApp = new NovaUIController();
 });
