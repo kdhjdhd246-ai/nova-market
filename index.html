@@ -10,7 +10,7 @@
     <!-- Background simulation for local testing -->
     <div class="quotex-bg-simulator"></div>
 
-    <!-- MAIN NOVA AI OVERLAY (This will be injected by bookmarklet later) -->
+    <!-- MAIN NOVA AI OVERLAY -->
     <div id="nova-ai-overlay">
         
         <!-- Floating Robot Avatar -->
@@ -27,15 +27,15 @@
                 </div>
                 <div class="badge-n">N</div>
             </div>
-            <button class="close-robot">
+            <button class="close-robot" aria-label="Close Robot">
                 <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
         </div>
 
         <!-- Glassmorphism Control Panel -->
         <div class="nova-panel" id="nova-main-panel">
-            <!-- Header -->
-            <div class="panel-header">
+            <!-- Header (Drag Handle) -->
+            <div class="panel-header" id="nova-panel-handle">
                 <div class="header-left">
                     <div class="logo-circle">N</div>
                     <div class="header-titles">
@@ -43,7 +43,7 @@
                         <p>Smart Market Scanner</p>
                     </div>
                 </div>
-                <button class="btn-close-panel">
+                <button class="btn-close-panel" aria-label="Minimize Panel">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
             </div>
@@ -57,7 +57,6 @@
 
             <!-- Content Area (Scan Mode) -->
             <div class="panel-content">
-                <!-- Market Selector -->
                 <div class="input-section">
                     <label><span class="dot cyan"></span> Market</label>
                     <div class="custom-select">
@@ -68,7 +67,6 @@
                     </div>
                 </div>
 
-                <!-- Timeframe Selector -->
                 <div class="input-section">
                     <label><span class="dot green"></span> Timeframe</label>
                     <div class="custom-select">
@@ -80,13 +78,11 @@
                     </div>
                 </div>
 
-                <!-- START SCAN Button -->
                 <button class="btn-start-scan">
                     <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                     START SCAN
                 </button>
 
-                <!-- Scan Mode Toggle -->
                 <div class="input-section mt-15">
                     <label><span class="dot green"></span> Scan Mode</label>
                     <div class="mode-toggle">
@@ -101,7 +97,6 @@
                     </div>
                 </div>
 
-                <!-- Status Indicator Box -->
                 <div class="status-box">
                     <div class="status-ring">
                         <div class="ring-inner"></div>
@@ -122,7 +117,28 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 20V10M12 20V4M6 20v-4"/></svg>
             </div>
         </div>
-        
+
+        <!-- Compact Minimized Launcher (Bottom Left) -->
+        <div class="nova-minimized hidden" id="nova-minimized-launcher">
+            <div class="mini-robot-avatar">
+                <div class="robot-face-mini">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="mouth"></div>
+                </div>
+            </div>
+            <div class="minimized-text">
+                <h4>NOVA</h4>
+                <p>Tap to open</p>
+            </div>
+            <div class="expand-icon">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 15l-6-6-6 6"/></svg>
+            </div>
+        </div>
+
     </div>
+
+    <!-- UI Logic Script -->
+    <script src="app.js"></script>
 </body>
 </html>
